@@ -49,6 +49,7 @@ class ApiChecker
   end
 
   def self.actual_call
+    puts "Actual call"
     messages = []
 
     response = call_empire_api

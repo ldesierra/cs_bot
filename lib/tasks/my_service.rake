@@ -5,6 +5,7 @@ namespace :my_service do
     require File.expand_path('../../config/application', __dir__)
     Rails.application.initialize!
 
+    puts "Running ApiChecker"
     ApiChecker.call
   end
 end

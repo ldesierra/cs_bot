@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: my-rails-app
+    env: ruby
+    buildCommand: SECRET_KEY_BASE=dummydummydummydummydummydummydummydummy bundle exec rake assets:precompile
+    startCommand: bundle exec puma -C config/puma.rb
+    plan: free
+    branch: main

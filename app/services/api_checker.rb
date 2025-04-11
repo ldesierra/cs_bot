@@ -9,43 +9,53 @@ class ApiChecker
   def self.call
     all_messages = []
     messages = actual_call
-    new_all_messages = all_messages + messages
-    if new_all_messages - all_messages != []
-      send_telegram_message((new_all_messages - all_messages).join('\n'))
+    if messages.is_a?(Array)
+      new_all_messages = all_messages + messages
+      if new_all_messages - all_messages != []
+        send_telegram_message((new_all_messages - all_messages).join('\n'))
+      end
+      all_messages = new_all_messages
     end
-    all_messages = new_all_messages
     sleep 10
 
     messages = actual_call
-    new_all_messages = all_messages + messages
-    if new_all_messages - all_messages != []
+    if messages.is_a?(Array)
+      new_all_messages = all_messages + messages
+      if new_all_messages - all_messages != []
       send_telegram_message((new_all_messages - all_messages).join('\n'))
+      end
+      all_messages = new_all_messages
     end
-    all_messages = new_all_messages
     sleep 10
 
     messages = actual_call
-    new_all_messages = all_messages + messages
-    if new_all_messages - all_messages != []
-      send_telegram_message((new_all_messages - all_messages).join('\n'))
+    if messages.is_a?(Array)
+      new_all_messages = all_messages + messages
+      if new_all_messages - all_messages != []
+        send_telegram_message((new_all_messages - all_messages).join('\n'))
+      end
+      all_messages = new_all_messages
     end
-    all_messages = new_all_messages
     sleep 10
 
     messages = actual_call
-    new_all_messages = all_messages + messages
-    if new_all_messages - all_messages != []
-      send_telegram_message((new_all_messages - all_messages).join('\n'))
+    if messages.is_a?(Array)
+      new_all_messages = all_messages + messages
+      if new_all_messages - all_messages != []
+        send_telegram_message((new_all_messages - all_messages).join('\n'))
+      end
+      all_messages = new_all_messages
     end
-    all_messages = new_all_messages
     sleep 10
 
     messages = actual_call
-    new_all_messages = all_messages + messages
-    if new_all_messages - all_messages != []
-      send_telegram_message((new_all_messages - all_messages).join('\n'))
+    if messages.is_a?(Array)
+      new_all_messages = all_messages + messages
+      if new_all_messages - all_messages != []
+        send_telegram_message((new_all_messages - all_messages).join('\n'))
+      end
+      all_messages = new_all_messages
     end
-    all_messages = new_all_messages
   end
 
   def self.actual_call

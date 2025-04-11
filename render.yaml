@@ -1,8 +1,8 @@
 services:
-  - type: web
-    name: my-rails-app
+  - type: cron
+    name: my-service-runner
     env: ruby
-    buildCommand: SECRET_KEY_BASE=dummydummydummydummydummydummydummydummy bundle exec rake assets:precompile
-    startCommand: bundle exec puma -C config/puma.rb
+    schedule: "* * * * *" # Every minute
+    command: bundle exec rake my_service:run
     plan: free
     branch: main

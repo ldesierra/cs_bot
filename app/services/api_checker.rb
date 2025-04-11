@@ -6,64 +6,50 @@ class ApiChecker
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
 
-  def self.call
+  def self.fetch_messages(all_messages)
+    messages = actual_call
+    if messages.is_a?(Array)
+      new_all_messages = all_messages + messages
+      if new_all_messages - all_messages != []
+        send_telegram_message((new_all_messages - all_messages).join('\n'))
+      end
+      all_messages = new_all_messages
+    end
+
+    all_messages
+  end
+
+  def self.fetch_and_wait
     all_messages = []
-    messages = actual_call
-    if messages.is_a?(Array)
-      new_all_messages = all_messages + messages
-      if new_all_messages - all_messages != []
-        send_telegram_message((new_all_messages - all_messages).join('\n'))
-      end
-      all_messages = new_all_messages
-    end
-    sleep 10
 
-    messages = actual_call
-    if messages.is_a?(Array)
-      new_all_messages = all_messages + messages
-      if new_all_messages - all_messages != []
-      send_telegram_message((new_all_messages - all_messages).join('\n'))
-      end
-      all_messages = new_all_messages
-    end
-    sleep 10
+    all_messages = fetch_messages(all_messages)
+    sleep 20
 
-    messages = actual_call
-    if messages.is_a?(Array)
-      new_all_messages = all_messages + messages
-      if new_all_messages - all_messages != []
-        send_telegram_message((new_all_messages - all_messages).join('\n'))
-      end
-      all_messages = new_all_messages
-    end
-    sleep 10
+    all_messages = fetch_messages(all_messages)
+    sleep 20
 
-    messages = actual_call
-    if messages.is_a?(Array)
-      new_all_messages = all_messages + messages
-      if new_all_messages - all_messages != []
-        send_telegram_message((new_all_messages - all_messages).join('\n'))
-      end
-      all_messages = new_all_messages
-    end
-    sleep 10
+    all_messages = fetch_messages(all_messages)
+    sleep 20
+  end
 
-    messages = actual_call
-    if messages.is_a?(Array)
-      new_all_messages = all_messages + messages
-      if new_all_messages - all_messages != []
-        send_telegram_message((new_all_messages - all_messages).join('\n'))
-      end
-      all_messages = new_all_messages
-    end
+  def self.call
+    fetch_and_wait
+    fetch_and_wait
+    fetch_and_wait
+    fetch_and_wait
+    fetch_and_wait
+    fetch_and_wait
+    fetch_and_wait
+    fetch_and_wait
+    fetch_and_wait
   end
 
   def self.actual_call
-    puts "Actual call"
     messages = []
-
     response = call_empire_api
+
     if response.code == 200
+
       katowice_2015_items = get_katowice_2015_items(response)
       katowice_2014_items = get_katowice_2014_items(response)
       high_floats = get_high_float_items(response)
@@ -79,11 +65,12 @@ class ApiChecker
       elsif high_floats.any?
         messages << "High floats found: #{high_floats.map { |item| item["market_name"] }.join(', ')}"
       elsif special_items.any?
-        messages << "Special items found: #{special_items.map { |item| item["market_name"] }.join(', ')}"
+        puts "Special items found: #{special_items.map { |item| item["market_name"] }.join(', ')}"
       end
 
       messages
     else
+
       send_telegram_message(response.code)
     end
   end
@@ -104,8 +91,7 @@ class ApiChecker
   end
 
   def self.get_special_items(response)
-    items = ["AK-47 | Case Hardened", "Desert Eagle | Blaze (Factory New)"]
-    response["data"].filter { |item| item["market_name"].match? Regexp.union(items) }
+    response["data"].filter { |item| item["market_name"].include?("s") }
   end
 
   def self.get_low_float_items(response)

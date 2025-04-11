@@ -58,11 +58,11 @@ class ApiChecker
       low_floats = get_low_float_items(response)
 
       if katowice_2015_items.any?
-        messages << "Katowice 2015 items found: #{katowice_2015_items.map { |item| "#{item["market_name"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
+        messages << "Katowice 2015 items found: #{katowice_2015_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       elsif low_floats.any?
-        messages << "Low floats found: #{low_floats.map { |item| item["market_name"] }.join(', ')}"
+        messages << "Low floats found: #{low_floats.map { |item| "#{item["market_name"]} with id #{item["id"]}" }.join(', ')}"
       elsif katowice_2014_items.any?
-        messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
+        messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       end
 
       messages

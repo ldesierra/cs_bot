@@ -61,6 +61,8 @@ class ApiChecker
         messages << "Katowice 2015 items found: #{katowice_2015_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       elsif low_floats.any?
         messages << "Low floats found: #{low_floats.map { |item| "#{item["market_name"]} with id #{item["id"]}" }.join(', ')}"
+      elsif special_items.any?
+        messages << "Special items found: #{special_items.map { |item| "#{item["market_name"]} with id #{item["id"]}" }.join(', ')}"
       elsif katowice_2014_items.any?
         messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       end
@@ -72,7 +74,17 @@ class ApiChecker
   end
 
   def self.get_katowice_2015_items(response)
-    response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("Katowice 2015") } }
+    multiple = response["data"].filter { |item| item["stickers"]&.pluck("name")&.count {|s| s&.include?("Katowice 2015") } >= 3 }
+    holo = response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("Holo) | Katowice 2015") } }
+
+    multiple + holo
+  end
+
+  def self.get_special_items(response)
+    hydra = response["data"].filter { |item| item["market_name"]&.include?("Desert Hydra") }
+    wild_lotus = response["data"].filter { |item| item["market_name"]&.include?("Wild Lotus") }
+
+    wild_lotus + hydra
   end
 
   def self.get_katowice_2014_items(response)

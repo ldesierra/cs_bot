@@ -23,28 +23,20 @@ class ApiChecker
     all_messages = []
 
     all_messages = fetch_messages(all_messages)
-    sleep 20
+    sleep 30
 
     all_messages = fetch_messages(all_messages)
-    sleep 20
+    sleep 30
 
     all_messages = fetch_messages(all_messages)
-    sleep 20
+    sleep 30
   end
 
   def self.call
     fetch_and_wait
-    sleep 20
     fetch_and_wait
-    sleep 20
     fetch_and_wait
-    sleep 20
     fetch_and_wait
-    sleep 20
-    fetch_and_wait
-    sleep 20
-    fetch_and_wait
-    sleep 20
     fetch_and_wait
   end
 

@@ -55,6 +55,7 @@ class ApiChecker
     if response.code == 200
       katowice_2015_items = get_katowice_2015_items(response)
       katowice_2014_items = get_katowice_2014_items(response)
+      special_items = get_special_items(response)
       low_floats = get_low_float_items(response)
 
       if katowice_2015_items.any?
@@ -74,7 +75,10 @@ class ApiChecker
   end
 
   def self.get_katowice_2015_items(response)
-    multiple = response["data"].filter { |item| item["stickers"]&.pluck("name")&.count {|s| s&.include?("Katowice 2015") } >= 3 }
+    multiple = response["data"].filter do |item|
+      count = item["stickers"]&.pluck("name")&.count {|s| s&.include?("Katowice 2015") }
+      count.present? && count >= 3
+    end
     holo = response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("Holo) | Katowice 2015") } }
 
     multiple + holo

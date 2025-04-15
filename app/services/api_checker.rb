@@ -8,6 +8,9 @@ class ApiChecker
 
   def self.fetch_messages(all_messages)
     messages = actual_call
+
+    Rails.logger.info("Fetching messages at #{DateTime.now}")
+
     if messages.is_a?(Array)
       new_all_messages = all_messages + messages
       if new_all_messages - all_messages != []

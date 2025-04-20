@@ -23,5 +23,17 @@ module Cs
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    Sidekiq.configure_server do |config|
+      config.on(:startup) do
+        schedule_file = Rails.root.join("config", "sidekiq.yml")
+        if File.exist?(schedule_file)
+          yaml = YAML.load_file(schedule_file)
+          if yaml && yaml[:schedule]
+            Sidekiq.schedule = yaml[:schedule]
+            Sidekiq::Scheduler.reload_schedule!
+          end
+        end
+      end
+    end
   end
 end

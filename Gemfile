@@ -20,6 +20,11 @@ gem "telegram-bot-ruby"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
+gem "sidekiq"
+gem "sidekiq-scheduler"
+
+gem "foreman"
+
 gem "whenever"
 
 gem "pry-rails", "~> 0.3.11"

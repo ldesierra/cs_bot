@@ -1,0 +1,10 @@
+:concurrency: 1
+
+:scheduler:
+  :schedule:
+    hourly_job:
+      every: ["1h"]
+      class: "HourlyJob"
+    secondly_job:
+      every: ["20s"]
+      class: "SecondlyJob"

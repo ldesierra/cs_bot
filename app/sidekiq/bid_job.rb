@@ -9,15 +9,19 @@ class BidJob
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
 
   def perform(item, amount)
+    puts "BidJob"
     if item["market_value"].to_f > 1600
-      message = build_high_market_value_message(item)
+      message = item_message(item)
     elsif item["wear"].to_f <= 0.000
-      message = bid_for(:special, item, amount)
+      message = item_message(item)
+      other_message = bid_for(:special, item, amount)
     else
-      message = bid_for(:normal, item, amount)
+      message = item_message(item)
+      other_message = bid_for(:normal, item, amount)
     end
 
     send_telegram_message(message) if message.present?
+    send_telegram_message(other_message) if other_message.present?
   end
 
   private
@@ -44,6 +48,10 @@ class BidJob
   end
 
   def bid(item, amount)
+    if amount > 1600
+      return
+    end
+
     HTTParty.post(
       "https://csgoempire.com/api/v2/trading/deposit/#{item["id"]}/bid",
       headers: {
@@ -55,7 +63,7 @@ class BidJob
     )
   end
 
-  def build_high_market_value_message(item)
+  def item_message(item)
     "Bid for #{item["market_name"]} with ID #{item["id"]} — Market: #{item["market_value"]}, Purchase: #{item["purchase_price"]}, Wear: #{item["wear"]}"
   end
 

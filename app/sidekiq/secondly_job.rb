@@ -59,7 +59,6 @@ class SecondlyJob
   end
 
   def get_low_float_items(response)
-    return nil
     response["data"].filter { |item| item["wear"] && item["wear"] <= 0.001 }
   end
 

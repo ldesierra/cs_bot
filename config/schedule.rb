@@ -1,7 +1,7 @@
 set :environment, "development" # or "production"
 set :output, "log/cron.log"
 
-every 20.seconds do
+every 15.seconds do
   runner "SecondlyJob.perform_async"
 end
 

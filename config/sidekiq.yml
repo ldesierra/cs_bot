@@ -6,5 +6,5 @@
       every: ["1h"]
       class: "HourlyJob"
     secondly_job:
-      every: ["20s"]
+      every: ["15s"]
       class: "SecondlyJob"

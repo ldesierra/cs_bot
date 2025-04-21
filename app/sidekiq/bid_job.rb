@@ -12,12 +12,16 @@ class BidJob
     puts "BidJob"
     if item["market_value"].to_f > 1600
       message = item_message(item)
+
+      if item["above_recommended_price"] < 10 && item["market_value"].to_f < 6000
+        other_message = bid_for(:normal, item, true)
+      end
     elsif item["wear"].to_f <= 0.000
       message = item_message(item)
-      other_message = bid_for(:special, item, amount)
+      other_message = bid_for(:special, item, false)
     else
       message = item_message(item)
-      other_message = bid_for(:normal, item, amount)
+      other_message = bid_for(:normal, item, false)
     end
 
     send_telegram_message(message) if message.present?
@@ -26,29 +30,20 @@ class BidJob
 
   private
 
-  def bid_for(kind, item, amount)
-    if (item["purchase_price"].to_f / 160) < (kind == :special ? 10 : 1)
-      response = bid(item, (amount || item["purchase_price"]))
+  def bid_for(kind, item, special)
+    if special || (item["purchase_price"].to_f / 160) < (kind == :special ? 10 : 1)
+      response = bid(item, item["purchase_price"], special)
 
       if response["success"]
-        ends_at = Time.at(response["auction_data"]["auction_ends_at"])
-        seconds_left = (ends_at - Time.now).to_i
-        seconds_left = seconds_left - 15
-        seconds_left = seconds_left < 0 ? 0 : seconds_left
-        BidJob.perform_in(seconds_left.seconds, item, nil)
-        return "Bid placed for #{item["market_name"]} (special wear ≤ 0.000). Ends in #{seconds_left} seconds."
+        return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 160}."
       else
-        if response["message_localized"].include?("offer_already_placed")
-          response = bid_for(kind, item, response["data"]["next_bid"])
-        else
-          return "Failed to bid on special item #{item["market_name"]}. Error: #{response["message"]}"
-        end
+        return "Failed to bid on #{kind} item #{item["market_name"]}. Error: #{response["message"]}"
       end
     end
   end
 
-  def bid(item, amount)
-    if amount > 1600
+  def bid(item, amount, special)
+    if amount > 1600 && !special
       return
     end
 
@@ -64,7 +59,7 @@ class BidJob
   end
 
   def item_message(item)
-    "Bid for #{item["market_name"]} with ID #{item["id"]} — Market: #{item["market_value"]}, Purchase: #{item["purchase_price"]}, Wear: #{item["wear"]}"
+    "ITEM FOUND #{item["market_name"]} with ID #{item["id"]} — Market: #{item["market_value"]}, Purchase: #{item["purchase_price"]}, Wear: #{item["wear"]}"
   end
 
   def send_telegram_message(message)

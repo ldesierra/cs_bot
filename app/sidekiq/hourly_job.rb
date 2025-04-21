@@ -10,90 +10,28 @@ class HourlyJob
 
   def perform
     puts "HourlyJob"
-    messages = []
 
-    response = call_empire_api(1)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
+    page = 1
+    not_finished = true
 
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
+    while not_finished
+      messages = []
+
+      response = call_empire_api(page)
+      if response.code == 200
+        if response["data"].empty?
+          not_finished = false
+        else
+          low_floats = get_low_float_items(response)
+
+          if low_floats.any?
+            messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
+          end
+        end
       end
+
+      page = page + 1
     end
-
-    response = call_empire_api(2)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    response = call_empire_api(4)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    response = call_empire_api(5)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    response = call_empire_api(6)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    response = call_empire_api(7)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    response = call_empire_api(8)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    response = call_empire_api(9)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    response = call_empire_api(10)
-    if response.code == 200
-      low_floats = get_low_float_items(response)
-
-      if low_floats.any?
-        messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]}" }.join(', ')}"
-      end
-    end
-
-    send_telegram_message(messages&.join('\n'))
   end
 
   private

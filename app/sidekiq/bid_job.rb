@@ -31,7 +31,7 @@ class BidJob
   private
 
   def bid_for(kind, item, special)
-    if special || (item["purchase_price"].to_f / 160) < (kind == :special ? 10 : 1)
+    if special || (item["purchase_price"].to_f / 160) < (kind == :special ? 4 : 0.5)
       response = bid(item, item["purchase_price"], special)
 
       if response["success"]

@@ -44,11 +44,11 @@ class HourlyJob
   private
 
   def get_katowice_2014_items(response)
-    response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("Katowice 2014") } }
+    response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("Holo) Katowice 2014") } }
   end
 
   def get_low_float_items(response)
-    response["data"].filter { |item| item["wear"] && item["wear"] <= 0.001 }
+    response["data"].filter { |item| item["wear"] && item["wear"] <= 0.000 }
   end
 
   def send_telegram_message(message)

@@ -10,7 +10,9 @@ class BidJob
 
   def perform(item, amount)
     puts "BidJob"
-    if item["market_value"].to_f > 1600
+    if amount.present?
+      bid_for(:wtf, item, false)
+    elsif item["market_value"].to_f > 1600
       message = item_message(item)
 
       if item["above_recommended_price"] < 10 && item["market_value"].to_f < 6000
@@ -31,6 +33,16 @@ class BidJob
   private
 
   def bid_for(kind, item, special)
+    if kind == :wtf && (item["purchase_price"].to_f / 160) < 1000
+      response = bid(item, item["purchase_price"], true)
+
+      if response["success"]
+        return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 160}."
+      else
+        return "Failed to bid on #{kind} item #{item["market_name"]}. Error: #{response["message"]}"
+      end
+    end
+
     if special || (item["purchase_price"].to_f / 160) < (kind == :special ? 4 : 0.5)
       response = bid(item, item["purchase_price"], special)
 

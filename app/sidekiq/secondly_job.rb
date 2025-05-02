@@ -36,6 +36,10 @@ class SecondlyJob
         end
       elsif katowice_2014_items.any?
         messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
+      elsif blue_items.any?
+        messages << "Blue items found: #{blue_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
+      elsif special_items.any?
+        messages << "Special items found: #{special_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       end
 
       messages
@@ -54,12 +58,24 @@ class SecondlyJob
     multiple + holo
   end
 
+  def get_super_rare_items(response)
+    response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("OWER (Holo) | Katowice 2014") } }
+  end
+
+  def get_special_items(response)
+    response["data"].filter { |item| item["market_value"] > 360000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Doppler") }
+  end
+
   def get_katowice_2014_items(response)
     response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("Katowice 2014") } }
   end
 
   def get_low_float_items(response)
     response["data"].filter { |item| item["wear"] && item["wear"] <= 0.001 }
+  end
+
+  def get_blue_items(response)
+    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_i >= 45 }
   end
 
   def call_empire_api

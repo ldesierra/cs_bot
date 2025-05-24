@@ -27,6 +27,7 @@ class SecondlyJob
       katowice_2015_items = get_katowice_2015_items(response)
       katowice_2014_items = get_katowice_2014_items(response)
       low_floats = get_low_float_items(response)
+      special_items = get_special_items(response)
 
       if katowice_2015_items.any?
         messages << "Katowice 2015 items found: #{katowice_2015_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
@@ -36,8 +37,6 @@ class SecondlyJob
         end
       elsif katowice_2014_items.any?
         messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
-      elsif blue_items.any?
-        messages << "Blue items found: #{blue_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       elsif special_items.any?
         messages << "Special items found: #{special_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       end
@@ -63,7 +62,15 @@ class SecondlyJob
   end
 
   def get_special_items(response)
-    response["data"].filter { |item| item["market_value"] > 360000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Doppler") }
+    s = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Dragon Lore") }
+    d = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Gungnir") }
+    sd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Fire Serpent") }
+    ds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("The Prince") }
+    sds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Wild Lotus") }
+    dsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Gold Arabesque") }
+    sdsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Howl") }
+
+    s + d + sd + ds + sds + dsd + sdsd
   end
 
   def get_katowice_2014_items(response)

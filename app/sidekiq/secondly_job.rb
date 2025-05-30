@@ -62,13 +62,13 @@ class SecondlyJob
   end
 
   def get_special_items(response)
-    s = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Dragon Lore") }
-    d = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Gungnir") }
-    sd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Fire Serpent") }
-    ds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("The Prince") }
-    sds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Wild Lotus") }
-    dsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Gold Arabesque") }
-    sdsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && !item["market_name"].include?("Howl") }
+    s = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Dragon Lore") }
+    d = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Gungnir") }
+    sd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Fire Serpent") }
+    ds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("The Prince") }
+    sds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Wild Lotus") }
+    dsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Gold Arabesque") }
+    sdsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Howl") }
 
     s + d + sd + ds + sds + dsd + sdsd
   end

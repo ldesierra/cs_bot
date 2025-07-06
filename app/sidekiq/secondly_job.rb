@@ -69,8 +69,9 @@ class SecondlyJob
     sds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Wild Lotus") }
     dsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Gold Arabesque") }
     sdsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Howl") }
+    sdsds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Butterfly Knife | Marble") }
 
-    s + d + sd + ds + sds + dsd + sdsd
+    s + d + sd + ds + sds + dsd + sdsd + sdsds
   end
 
   def get_katowice_2014_items(response)

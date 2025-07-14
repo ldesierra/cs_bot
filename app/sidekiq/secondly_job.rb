@@ -26,11 +26,20 @@ class SecondlyJob
     if response.code == 200
       katowice_2015_items = get_katowice_2015_items(response)
       katowice_2014_items = get_katowice_2014_items(response)
+      blue_gem_items = get_blue_gem_items(response)
+      nice_fade_items = get_nice_fade_items(response)
       low_floats = get_low_float_items(response)
+      high_float_items = get_high_float_items(response)
       special_items = get_special_items(response)
 
       if katowice_2015_items.any?
         messages << "Katowice 2015 items found: #{katowice_2015_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
+      elsif blue_gem_items.any?
+        messages << "Blue gem items found: #{blue_gem_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with blue percentage #{ item["blue_percentage"] }" }.join(', ')}"
+      elsif nice_fade_items.any?
+        messages << "Nice fade items found: #{nice_fade_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with fade percentage #{ item["fade_percentage"] }" }.join(', ')}"
+      elsif high_float_items.any?
+        messages << "High float items found: #{high_float_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with float #{ item["wear"] }" }.join(', ')}"
       elsif low_floats.present? && low_floats.any?
         low_floats.each do |item|
           BidJob.perform_async(item, nil)
@@ -82,8 +91,16 @@ class SecondlyJob
     response["data"].filter { |item| item["wear"] && item["wear"] <= 0.001 }
   end
 
-  def get_blue_items(response)
-    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_i >= 45 }
+  def get_nice_fade_items(response)
+    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 98 }
+  end
+
+  def get_blue_gem_items(response)
+    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_f >= 40 }
+  end
+
+  def get_high_float_items(response)
+    response["data"].filter { |item| item["float"] && item["wear"].to_f >= 0.99 }
   end
 
   def call_empire_api
@@ -98,6 +115,8 @@ class SecondlyJob
   def send_telegram_message(message)
     Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: message)
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: message)
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_AGUS, text: message)
     end
   rescue StandardError => e
     Rails.logger.error("Telegram Error: #{e.message}")

@@ -23,6 +23,8 @@ class HourlyJob
         else
           low_floats = get_low_float_items(response)
           katowice_2014_items = get_katowice_2014_items(response)
+          nice_fade_items = get_nice_fade_items(response)
+          blue_gem_items = get_blue_gem_items(response)
 
           if low_floats.any?
             messages << "found: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
@@ -44,7 +46,15 @@ class HourlyJob
   private
 
   def get_katowice_2014_items(response)
-    response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("Holo) Katowice 2014") } }
+    response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("(Holo) | Katowice 2014") } }
+  end
+
+  def get_nice_fade_items(response)
+    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 98 }
+  end
+
+  def get_blue_gem_items(response)
+    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_f >= 40 }
   end
 
   def get_low_float_items(response)

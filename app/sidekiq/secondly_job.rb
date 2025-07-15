@@ -7,6 +7,8 @@ class SecondlyJob
   API_URL = 'https://your-endpoint-x.com'
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
+  TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
+  TELEGRAM_CHAT_ID_AGUS = ENV["TELEGRAM_CHAT_ID_AGUS"]
 
   def perform
     puts "SecondlyJob"
@@ -92,15 +94,22 @@ class SecondlyJob
   end
 
   def get_nice_fade_items(response)
-    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 98 }
+    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 97 }
   end
 
   def get_blue_gem_items(response)
-    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_f >= 40 }
+    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_f >= 25 }
   end
 
   def get_high_float_items(response)
     response["data"].filter { |item| item["float"] && item["wear"].to_f >= 0.99 }
+  end
+
+  def get_good_float_gloves(response)
+    s = response["data"].filter { |item| item["market_name"].include?("Gloves") }
+    good_minimal = s.filter { |item| item["wear"].to_f >= 0.07 && item["wear"].to_f <= 0.08 }
+    good_field = s.filter { |item| item["wear"].to_f >= 0.15 && item["wear"].to_f <= 0.17 }
+    good_minimal + good_field
   end
 
   def call_empire_api

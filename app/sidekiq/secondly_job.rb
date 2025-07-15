@@ -124,7 +124,11 @@ class SecondlyJob
   def send_telegram_message(message)
     Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: message)
+    end
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: message)
+    end
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_AGUS, text: message)
     end
   rescue StandardError => e

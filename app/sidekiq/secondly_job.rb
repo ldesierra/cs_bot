@@ -11,9 +11,7 @@ class SecondlyJob
   TELEGRAM_CHAT_ID_AGUS = ENV["TELEGRAM_CHAT_ID_AGUS"]
 
   def perform
-    puts "SecondlyJob"
     messages = actual_call
-    Rails.logger.info("Fetching messages at #{DateTime.now}")
 
     return unless messages.present?
     send_telegram_message(messages&.join('\n'))
@@ -30,26 +28,27 @@ class SecondlyJob
       katowice_2014_items = get_katowice_2014_items(response)
       blue_gem_items = get_blue_gem_items(response)
       nice_fade_items = get_nice_fade_items(response)
+      m4_and_awp_fade = get_m4_and_awp_fade(response)
       low_floats = get_low_float_items(response)
       high_float_items = get_high_float_items(response)
       special_items = get_special_items(response)
 
-      if katowice_2015_items.any?
-        messages << "Katowice 2015 items found: #{katowice_2015_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
-      elsif blue_gem_items.any?
+      if blue_gem_items.any?
         messages << "Blue gem items found: #{blue_gem_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with blue percentage #{ item["blue_percentage"] }" }.join(', ')}"
       elsif nice_fade_items.any?
-        messages << "Nice fade items found: #{nice_fade_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with fade percentage #{ item["fade_percentage"] }" }.join(', ')}"
-      elsif high_float_items.any?
-        messages << "High float items found: #{high_float_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with float #{ item["wear"] }" }.join(', ')}"
+        nice_fade_items.each do |item|
+          BidJobFade.perform_async(item, false)
+        end
+      elsif m4_and_awp_fade.any?
+        m4_and_awp_fade.each do |item|
+          BidJobFade.perform_async(item, true)
+        end
       elsif low_floats.present? && low_floats.any?
         low_floats.each do |item|
           BidJob.perform_async(item, nil)
         end
       elsif katowice_2014_items.any?
         messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
-      elsif special_items.any?
-        messages << "Special items found: #{special_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
       end
 
       messages
@@ -73,16 +72,7 @@ class SecondlyJob
   end
 
   def get_special_items(response)
-    s = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Dragon Lore") }
-    d = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Gungnir") }
-    sd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Fire Serpent") }
-    ds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("The Prince") }
-    sds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Wild Lotus") }
-    dsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Gold Arabesque") }
-    sdsd = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Howl") }
-    sdsds = response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Butterfly Knife | Marble") }
-
-    s + d + sd + ds + sds + dsd + sdsd + sdsds
+    response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Fire Serpent") }
   end
 
   def get_katowice_2014_items(response)
@@ -94,7 +84,13 @@ class SecondlyJob
   end
 
   def get_nice_fade_items(response)
-    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 97 }
+    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 98 }
+                    .filter { |item| item["market_name"].include?("Knife") }
+  end
+
+  def get_m4_and_awp_fade(response)
+    response["data"].filter { |item| item["market_name"].include?("M4A1-S") || item["market_name"].include?("AWP") }
+                    .filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 97 }
   end
 
   def get_blue_gem_items(response)

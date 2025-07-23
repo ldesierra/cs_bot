@@ -9,7 +9,6 @@ class BidJob
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
 
   def perform(item, amount)
-    puts "BidJob"
     if amount.present?
       bid_for(:wtf, item, false)
     elsif item["market_value"].to_f > 1600

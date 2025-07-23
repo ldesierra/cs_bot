@@ -9,8 +9,6 @@ class HourlyJob
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
 
   def perform
-    puts "HourlyJob"
-
     page = 1
     not_finished = true
     messages = []
@@ -32,6 +30,12 @@ class HourlyJob
           if katowice_2014_items.any?
             messages << "found: #{katowice_2014_items.map { |item| "#{item["market_name"]} - #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
           end
+          if nice_fade_items.any?
+            messages << "found: #{nice_fade_items.map { |item| "#{item["market_name"]} - #{item["id"]} with fade percentage #{ item["fade_percentage"] } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
+          end
+          if blue_gem_items.any?
+            messages << "found: #{blue_gem_items.map { |item| "#{item["market_name"]} - #{item["id"]} with blue percentage #{ item["blue_percentage"] } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
+          end
         end
       end
 
@@ -50,7 +54,8 @@ class HourlyJob
   end
 
   def get_nice_fade_items(response)
-    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 98 }
+    items = response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 97 }
+    items.filter { |item| item["market_name"].include?("AWP") || item["market_name"].include?("M4A1-S") || item["market_name"].include?("Knife") }
   end
 
   def get_blue_gem_items(response)

@@ -11,10 +11,10 @@ class BidJob
   def perform(item, amount)
     if amount.present?
       bid_for(:wtf, item, false)
-    elsif item["market_value"].to_f > 1600
+    elsif item["purchase_price"].to_f > 1600
       message = item_message(item)
 
-      if item["above_recommended_price"] < 10 && item["market_value"].to_f < 6000
+      if item["above_recommended_price"] < 10 && item["purchase_price"].to_f < 6000
         other_message = bid_for(:normal, item, true)
       end
     elsif item["wear"].to_f <= 0.000

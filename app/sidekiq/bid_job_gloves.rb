@@ -1,18 +1,18 @@
 require 'httparty'
 require 'telegram/bot'
 
-class BidJobFade
+class BidJobGloves
   include Sidekiq::Job
 
   API_URL = 'https://your-endpoint-x.com'
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
 
-  def perform(item, special = false)
+  def perform(item)
     message = item_message(item)
     send_telegram_message(message) if message.present?
 
-    if (item["above_recommended_price"] < 1 && !special) || (item["above_recommended_price"] < 4 && special)
+    if item["above_recommended_price"] < 5
       other_message = bid_for(item)
       send_telegram_message(other_message) if other_message.present?
     end

@@ -31,19 +31,27 @@ class SecondlyJob
       m4_and_awp_fade = get_m4_and_awp_fade(response)
       low_floats = get_low_float_items(response)
       high_float_items = get_high_float_items(response)
-      special_items = get_special_items(response)
+      nice_gloves_items = get_nice_gloves_items(response)
+
+      puts "TIME IS #{Time.now.hour}"
+      puts "MENOR A 5? #{Time.now.hour < 5}"
+      puts "MAYOR O IGUAL A 11? #{Time.now.hour >= 11}"
 
       if blue_gem_items.any?
         messages << "Blue gem items found: #{blue_gem_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with blue percentage #{ item["blue_percentage"] }" }.join(', ')}"
-      elsif nice_fade_items.any?
+      elsif nice_fade_items.any? && (Time.now.hour < 5 || Time.now.hour >= 11)
         nice_fade_items.each do |item|
           BidJobFade.perform_async(item, false)
         end
-      elsif m4_and_awp_fade.any?
+      elsif nice_gloves_items.any? && (Time.now.hour < 5 || Time.now.hour >= 11)
+        nice_gloves_items.each do |item|
+          BidJobGloves.perform_async(item)
+        end
+      elsif m4_and_awp_fade.any? && (Time.now.hour < 5 || Time.now.hour >= 11)
         m4_and_awp_fade.each do |item|
           BidJobFade.perform_async(item, true)
         end
-      elsif low_floats.present? && low_floats.any?
+      elsif low_floats.present? && low_floats.any? && (Time.now.hour < 2 || Time.now.hour >= 8)
         low_floats.each do |item|
           BidJob.perform_async(item, nil)
         end
@@ -55,6 +63,12 @@ class SecondlyJob
     else
       puts "Error: #{response.code}"
     end
+  end
+
+  def get_nice_gloves_items(response)
+    names = ["Specialist Gloves | Crimson Web", "Specialist Gloves | Marble Fade", "Hand Wraps | Slaughter", "Hand Wraps | Cobalt Skulls", "Driver Gloves | Imperial Plaid", "Driver Gloves | King Snake", "Sport Gloves | Nocts", "Specialist Gloves | Tiger Strike", "Driver Gloves | Snow Leopard"]
+    response["data"].filter { |item| names.any? { |name| item["market_name"].include?(name) } }
+                    .filter { |item| item["wear"].to_f >= 0.151 && item["wear"].to_f <= 0.18 }
   end
 
   def get_katowice_2015_items(response)
@@ -69,10 +83,6 @@ class SecondlyJob
 
   def get_super_rare_items(response)
     response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("OWER (Holo) | Katowice 2014") } }
-  end
-
-  def get_special_items(response)
-    response["data"].filter { |item| item["market_value"] > 260000 && item["above_recommended_price"] < 0 && item["market_name"].include?("Fire Serpent") }
   end
 
   def get_katowice_2014_items(response)
@@ -94,18 +104,11 @@ class SecondlyJob
   end
 
   def get_blue_gem_items(response)
-    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_f >= 25 }
+    response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_f >= 40 }
   end
 
   def get_high_float_items(response)
-    response["data"].filter { |item| item["float"] && item["wear"].to_f >= 0.99 }
-  end
-
-  def get_good_float_gloves(response)
-    s = response["data"].filter { |item| item["market_name"].include?("Gloves") }
-    good_minimal = s.filter { |item| item["wear"].to_f >= 0.07 && item["wear"].to_f <= 0.08 }
-    good_field = s.filter { |item| item["wear"].to_f >= 0.15 && item["wear"].to_f <= 0.17 }
-    good_minimal + good_field
+    response["data"].filter { |item| item["wear"] && item["wear"].to_f >= 0.99 }
   end
 
   def call_empire_api

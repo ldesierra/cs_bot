@@ -12,7 +12,13 @@ class BidJobFade
     message = item_message(item)
     send_telegram_message(message) if message.present?
 
-    if (item["above_recommended_price"] < 1 && !special) || (item["above_recommended_price"] < 4 && special)
+    should_bid = if special
+                   (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 5) || (item["fade_percentage"].to_f >= 95 && item["above_recommended_price"] < 0.1)
+                 else
+                   (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 1) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < -4)
+                 end
+
+    if should_bid
       other_message = bid_for(item)
       send_telegram_message(other_message) if other_message.present?
     end
@@ -26,12 +32,12 @@ class BidJobFade
     if response["success"]
       return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 160}."
     else
-      return "Failed to bid on #{kind} item #{item["market_name"]}. Error: #{response["message"]}"
+      return "Failed to bid on item #{item["market_name"]}. Error: #{response["message"]}"
     end
   end
 
   def bid(item, amount)
-    api_key = ENV["next_buyer"] == 0 ? ENV["api_key"] : ENV["api_key_bro"]
+    api_key = ENV["next_buyer"].to_s == "0" ? ENV["api_key"] : ENV["api_key_bro"]
 
     HTTParty.post(
       "https://csgoempire.com/api/v2/trading/deposit/#{item["id"]}/bid",

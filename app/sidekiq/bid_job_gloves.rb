@@ -26,12 +26,12 @@ class BidJobGloves
     if response["success"]
       return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 160}."
     else
-      return "Failed to bid on #{kind} item #{item["market_name"]}. Error: #{response["message"]}"
+      return "Failed to bid on item #{item["market_name"]}. Error: #{response["message"]}"
     end
   end
 
   def bid(item, amount)
-    api_key = ENV["next_buyer"] == 0 ? ENV["api_key"] : ENV["api_key_bro"]
+    api_key = ENV["next_buyer"].to_s == "0" ? ENV["api_key"] : ENV["api_key_bro"]
 
     HTTParty.post(
       "https://csgoempire.com/api/v2/trading/deposit/#{item["id"]}/bid",

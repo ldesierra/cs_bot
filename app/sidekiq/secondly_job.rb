@@ -94,13 +94,13 @@ class SecondlyJob
   end
 
   def get_nice_fade_items(response)
-    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 98 }
+    response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 95 }
                     .filter { |item| item["market_name"].include?("Knife") }
   end
 
   def get_m4_and_awp_fade(response)
     response["data"].filter { |item| item["market_name"].include?("M4A1-S") || item["market_name"].include?("AWP") }
-                    .filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 97 }
+                    .filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 95 }
   end
 
   def get_blue_gem_items(response)

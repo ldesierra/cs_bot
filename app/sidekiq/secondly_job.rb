@@ -66,9 +66,9 @@ class SecondlyJob
   end
 
   def get_nice_gloves_items(response)
-    names = ["Specialist Gloves | Crimson Web", "Specialist Gloves | Marble Fade", "Hand Wraps | Slaughter", "Hand Wraps | Cobalt Skulls", "Driver Gloves | Imperial Plaid", "Driver Gloves | King Snake", "Sport Gloves | Nocts", "Specialist Gloves | Tiger Strike", "Driver Gloves | Snow Leopard"]
+    names = ["Specialist Gloves | Crimson Web", "Specialist Gloves | Marble Fade", "Sport Gloves | Omega", "Sport Gloves | Slingshot", "Hand Wraps | Slaughter", "Sport Gloves | Amphibious", "Hand Wraps | Cobalt Skulls", "Driver Gloves | Imperial Plaid", "Driver Gloves | King Snake", "Sport Gloves | Nocts", "Specialist Gloves | Tiger Strike", "Sport Gloves | Vice", "Driver Gloves | Snow Leopard"]
     response["data"].filter { |item| names.any? { |name| item["market_name"].include?(name) } }
-                    .filter { |item| item["wear"].to_f >= 0.151 && item["wear"].to_f <= 0.18 }
+                    .filter { |item| item["wear"].to_f >= 0.151 && item["wear"].to_f <= 0.20 }
   end
 
   def get_katowice_2015_items(response)

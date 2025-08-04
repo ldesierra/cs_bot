@@ -12,7 +12,10 @@ class BidJobGloves
     message = item_message(item)
     send_telegram_message(message) if message.present?
 
-    if item["above_recommended_price"] < 5
+    if item["market_name"].include?("Vice") && item["wear"] < 0.20 && item["above_recommended_price"] < 15
+      other_message = bid_for(item)
+      send_telegram_message(other_message) if other_message.present?
+    elsif (item["above_recommended_price"] < 7 && item["wear"] < 0.18) || (item["above_recommended_price"] < 3)
       other_message = bid_for(item)
       send_telegram_message(other_message) if other_message.present?
     end

@@ -6,7 +6,10 @@ class BidJobFade
 
   API_URL = 'https://your-endpoint-x.com'
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
+  TELEGRAM_TOKEN_2 = ENV["TELEGRAM_BOT_TOKEN_2"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
+  TELEGRAM_CHAT_ID_2 = ENV["TELEGRAM_CHAT_ID_2"]
+  TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
 
   def perform(item, special = false)
     message = item_message(item)
@@ -55,8 +58,11 @@ class BidJobFade
   end
 
   def send_telegram_message(message)
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN_2) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_2, text: message)
+    end
     Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
-      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: message)
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: message)
     end
   end
 end

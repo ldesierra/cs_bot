@@ -32,13 +32,13 @@ class HourlyJob
             messages << "found: #{katowice_2014_items.map { |item| "#{item["market_name"]} - #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
           end
           if nice_fade_items.any?
-            messages << "found: #{nice_fade_items.map { |item| "#{item["market_name"]} - #{item["id"]} with fade percentage #{ item["fade_percentage"] } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
+            messages << "found: #{nice_fade_items.map { |item| "#{item["market_name"]} - #{item["id"]} with fade percentage #{ item["fade_percentage"] } and above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
           end
           if blue_gem_items.any?
-            messages << "found: #{blue_gem_items.map { |item| "#{item["market_name"]} - #{item["id"]} with blue percentage #{ item["blue_percentage"] } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
+            messages << "found: #{blue_gem_items.map { |item| "#{item["market_name"]} - #{item["id"]} with blue percentage #{ item["blue_percentage"] } and above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
           end
           if nice_gloves_items.any?
-            messages << "found: #{nice_gloves_items.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
+            messages << "found: #{nice_gloves_items.map { |item| "#{item["market_name"]} - #{item["id"]} with above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 160 }" }.join(', ')}"
           end
         end
       end
@@ -56,8 +56,8 @@ class HourlyJob
   def get_nice_gloves_items(response)
     names = ["Specialist Gloves | Crimson Web", "Specialist Gloves | Marble Fade", "Hand Wraps | Slaughter", "Hand Wraps | Cobalt Skulls", "Driver Gloves | Imperial Plaid", "Driver Gloves | King Snake", "Sport Gloves | Nocts", "Specialist Gloves | Tiger Strike", "Driver Gloves | Snow Leopard"]
     response["data"].filter { |item| names.any? { |name| item["market_name"].include?(name) } }
-                    .filter { |item| item["wear"].to_f >= 0.151 && item["wear"].to_f <= 0.18 }
-                    .filter { |item| item["above_recommended_price"] < 15 }
+                    .filter { |item| item["wear"].to_f >= 0.151 && item["wear"].to_f <= 0.20 }
+                    .filter { |item| item["above_recommended_price"] < 25 }
   end
 
   def get_katowice_2014_items(response)
@@ -65,9 +65,9 @@ class HourlyJob
   end
 
   def get_nice_fade_items(response)
-    items = response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 97 }
+    items = response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 95 }
     items.filter { |item| item["market_name"].include?("AWP") || item["market_name"].include?("M4A1-S") || item["market_name"].include?("Knife") }
-         .filter { |item| item["above_recommended_price"] < 20 }
+         .filter { |item| item["above_recommended_price"] < 25 }
   end
 
   def get_blue_gem_items(response)
@@ -77,7 +77,7 @@ class HourlyJob
 
   def get_low_float_items(response)
     response["data"].filter { |item| item["wear"] && item["wear"] <= 0.000 }
-                    .filter { |item| item["above_recommended_price"] < 15 }
+                    .filter { |item| item["above_recommended_price"] < 20 }
   end
 
   def send_telegram_message(message)

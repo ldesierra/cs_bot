@@ -6,7 +6,9 @@ class BidJob
 
   API_URL = 'https://your-endpoint-x.com'
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
+  TELEGRAM_TOKEN_2 = ENV["TELEGRAM_BOT_TOKEN_2"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
+  TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
 
   def perform(item, amount)
     if amount.present?
@@ -32,21 +34,21 @@ class BidJob
   private
 
   def bid_for(kind, item, special)
-    if kind == :wtf && (item["purchase_price"].to_f / 160) < 1000
+    if kind == :wtf && (item["purchase_price"].to_f / 162.8) < 1000
       response = bid(item, item["purchase_price"], true)
 
       if response["success"]
-        return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 160}."
+        return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 162.8}."
       else
         return "Failed to bid on #{kind} item #{item["market_name"]}. Error: #{response["message"]}"
       end
     end
 
-    if special || (item["purchase_price"].to_f / 160) < (kind == :special ? 4 : 0.5)
+    if special || (item["purchase_price"].to_f / 162.8) < (kind == :special ? 4 : 0.5)
       response = bid(item, item["purchase_price"], special)
 
       if response["success"]
-        return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 160}."
+        return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 162.8}."
       else
         return "Failed to bid on #{kind} item #{item["market_name"]}. Error: #{response["message"]}"
       end
@@ -74,7 +76,7 @@ class BidJob
   end
 
   def send_telegram_message(message)
-    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN_2) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: message)
     end
   end

@@ -32,7 +32,7 @@ class HourlyJob
             messages << "found low float: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
           end
           if good_keychain.any?
-            messages << "found good keychain: #{good_keychain.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+            messages << "found good keychain: #{good_keychain.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
           end
           if katowice_2014_items.any?
             messages << "found katowice 2014: #{katowice_2014_items.map { |item| "#{item["market_name"]} - #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") } with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
@@ -60,11 +60,16 @@ class HourlyJob
   private
 
   def get_good_keychain(response)
-    names = ["Lil' Monster", "Lil' Tusk", "Lil' Vino", "Lil' No. 2", "Lil' Curse", "Lil' Smokey", "Lil' Baller", "Lil' Cackle", "Dead Weight", "Biomech", "Lil' Zen", "Splatter Cat", "Fluffy", "Gritty", "Whittle Guy", "Lil' Crass", "Lil' Ava", "Hot Sauce", "Big Kev", "Pinch O' Salt", "Lil' Cap Gun", "Stitch-Loaded", "Pocket AWP", "Backsplash", "Baby's AK", "Austin", "Whittle Knife"]
+    names = ["Die-cast AK", "Lil' Squirt", "Titeenium AWP", "Semi-Precious", "Baby Karat CT", "Baby Karat T", #small arms charms
+    "Diner Dog", "Lil' Monster", "Diamond Dog", "Hot Wurst", "Hot Howl", #missing link charms
+    "Lil' Chirp", "Piñatita", "Lil' Happy", "Lil' Prick", "Lil' Hero", 
+    "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent", #miising link community charms
+    "Lil' Eco", "Eye of Ball", "Lil' Yeti", "Hungry Eyes", "Flash Bomb",  
+    "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy"] #dr boom charms
 
     response["data"].filter { |item| !item["market_name"]&.include?("Charm") && !item["market_name"]&.include?("Souvenir") }
                     &.filter { |item| item["keychains"].present? }
-                    &.filter { |item| names.none? { |name| item["keychains"].first["name"]&.include?(name) } }
+                    &.filter { |item| names.any? { |name| item["keychains"].first["name"]&.include?(name) } }
                     &.filter { |item| (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 10) }
                     &.filter { |item| item["above_recommended_price"] < 10 }
   end

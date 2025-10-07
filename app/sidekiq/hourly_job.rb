@@ -9,6 +9,9 @@ class HourlyJob
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
   TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
   TELEGRAM_CHAT_ID_AGUS = ENV["TELEGRAM_CHAT_ID_AGUS"]
+  USD_50_KEYCHAINS = ["Hot Wurst", "Hot Howl", "Baby Karat CT", "Baby Karat T", "8 Ball IGL", "Lil' Ferno", "Butane Buddy", "Glitter Bomb", "Lil' Serpent", "Lil' Eldritch", "Lil' Boo", "Quick Silver"]
+  USD_20_KEYCHAINS = ["Semi-Precious", "Lil' Monster", "Diamond Dog"]
+  KEYCHAIN_NAMES = ["Die-cast AK", "Lil' Squirt", "Titeenium AWP", "Semi-Precious", "Baby Karat CT", "Baby Karat T", "Diner Dog", "Lil' Monster", "Diamond Dog", "Hot Wurst", "Hot Howl", "Lil' Chirp", "Piñatita", "Lil' Happy", "Lil' Prick", "Lil' Hero", "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent", "Lil' Eco", "Eye of Ball", "Lil' Yeti", "Hungry Eyes", "Flash Bomb", "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy"]
 
   def perform
     page = 1
@@ -26,6 +29,8 @@ class HourlyJob
           nice_fade_items = get_nice_fade_items(response)
           blue_gem_items = get_blue_gem_items(response)
           good_keychain = get_good_keychain(response)
+          good_keychain_50 = get_good_keychain_50(response)
+          good_keychain_20 = get_good_keychain_20(response)
           nice_gloves_items = get_nice_gloves_items(response)
 
           if low_floats.any?
@@ -33,6 +38,12 @@ class HourlyJob
           end
           if good_keychain.any?
             messages << "found good keychain: #{good_keychain.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+          end
+          if good_keychain_50.any?
+            messages << "found good keychain 50: #{good_keychain_50.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+          end
+          if good_keychain_20.any?
+            messages << "found good keychain 20: #{good_keychain_20.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
           end
           if katowice_2014_items.any?
             messages << "found katowice 2014: #{katowice_2014_items.map { |item| "#{item["market_name"]} - #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") } with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
@@ -59,19 +70,39 @@ class HourlyJob
 
   private
 
-  def get_good_keychain(response)
-    names = ["Die-cast AK", "Lil' Squirt", "Titeenium AWP", "Semi-Precious", "Baby Karat CT", "Baby Karat T", #small arms charms
-    "Diner Dog", "Lil' Monster", "Diamond Dog", "Hot Wurst", "Hot Howl", #missing link charms
-    "Lil' Chirp", "Piñatita", "Lil' Happy", "Lil' Prick", "Lil' Hero", 
-    "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent", #miising link community charms
-    "Lil' Eco", "Eye of Ball", "Lil' Yeti", "Hungry Eyes", "Flash Bomb",  
-    "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy"] #dr boom charms
+  def good_usd_50_keychain(item)
+    return false unless USD_50_KEYCHAINS.any? { |name| item["keychains"].first["name"]&.include?(name) }
 
-    response["data"].filter { |item| !item["market_name"]&.include?("Charm") && !item["market_name"]&.include?("Souvenir") }
+    (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 30)
+  end
+
+  def good_usd_20_keychain(item)
+    return false unless USD_20_KEYCHAINS.any? { |name| item["keychains"].first["name"]&.include?(name) }
+
+    (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 10)
+  end
+
+  def good_other_keychain(item)
+    return false unless KEYCHAIN_NAMES.any? { |name| item["keychains"].first["name"]&.include?(name) }
+    (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 5)
+  end
+
+  def get_good_keychain_50(response)
+    response["data"].filter { |item| !item["market_name"]&.include?("Charm") }
                     &.filter { |item| item["keychains"].present? }
-                    &.filter { |item| names.any? { |name| item["keychains"].first["name"]&.include?(name) } }
-                    &.filter { |item| (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 10) }
-                    &.filter { |item| item["above_recommended_price"] < 10 }
+                    &.filter { |item| good_usd_50_keychain(item)}
+  end
+
+  def get_good_keychain_20(response)
+    response["data"].filter { |item| !item["market_name"]&.include?("Charm") }
+                    &.filter { |item| item["keychains"].present? }
+                    &.filter { |item| good_usd_20_keychain(item)}
+  end
+
+  def get_good_keychain(response)
+    response["data"].filter { |item| !item["market_name"]&.include?("Charm") }
+                    &.filter { |item| item["keychains"].present? }
+                    &.filter { |item| good_other_keychain(item)}
   end
 
   def get_nice_gloves_items(response)

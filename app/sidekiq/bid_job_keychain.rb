@@ -27,7 +27,9 @@ class BidJobKeychain
   private
 
   def good_expensive(item)
-    names = ["Hot Howl", "Hot Wurst", "Baby Karat T", "Baby Karat CT", "Diamond Dog", "Semi-Precious"]
+    names = ["Hot Howl", "Hot Wurst", "Baby Karat T", "Baby Karat CT", "Diamond Dog", "Semi-Precious", 
+    "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy",   #drboom
+     "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent"]  #missing link com
 
     return false unless names.any? { |name| item["keychains"].present? && item["keychains"].first["name"]&.include?(name) }
     (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 10
@@ -58,7 +60,7 @@ class BidJobKeychain
   end
 
   def item_message(item)
-    "#{ENV["next_buyer"].to_s == "0" ? "LUCAS" : "MATEO CARA DE PENE"} KEYCHAIN SKIN FOUND #{item["market_name"]} with ID #{item["id"]} — Market: #{item["market_value"]}, Purchase: #{item["purchase_price"]}, Wear: #{item["wear"]}"
+    "#{ENV["next_buyer"].to_s == "0" ? "LUCAS" : "MATEO"} KEYCHAIN SKIN FOUND #{item["market_name"]} with ID #{item["id"]} — Market: #{item["market_value"]}, Purchase: #{item["purchase_price"]}, Wear: #{item["wear"]}"
   end
 
   def send_telegram_message(message)

@@ -91,7 +91,7 @@ class SecondlyJob
       response = call_empire_api
 
       if response.code == 200
-        katowice_2014_items = get_katowice_2014_items(response)
+        expensive_items = get_expensive_items(response)
         blue_gem_items = get_blue_gem_items(response)
         nice_fade_items = get_nice_fade_items(response)
         m4_and_awp_fade = get_m4_and_awp_fade(response)
@@ -110,6 +110,9 @@ class SecondlyJob
           keychain_items.each do |item|
             BidJobKeychain.perform_async(item)
           end
+        elsif expensive_items.any?
+          messages << "found expensive: #{expensive_items.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+        end
         elsif nice_gloves_items_mw.any? && (Time.now.hour <= 4 || Time.now.hour > 11)
           nice_gloves_items_mw.each do |item|
             BidJobGlovesMw.perform_async(item)
@@ -126,8 +129,6 @@ class SecondlyJob
           low_floats.each do |item|
             BidJob.perform_async(item, nil)
           end
-        elsif katowice_2014_items.any?
-          messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
         end
 
         messages
@@ -177,6 +178,10 @@ class SecondlyJob
     response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 95 }
                     .filter { |item| item["market_name"].include?("Knife") && !item["market_name"].include?("StatTrak") }
                     .filter { |item| item["wear"] && item["wear"].to_f <= 0.069 }
+  end
+
+  def get_expensive_items(response)
+    response["data"].filter { |item| item["purchase_price"].to_f / 162.8 > 5000 }
   end
 
   def get_m4_and_awp_fade(response)

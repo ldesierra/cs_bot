@@ -29,7 +29,7 @@ class BidJobFade
                     elsif item["market_name"].include?("Gut") || item["market_name"].include?("Navaja") || item["market_name"].include?("Flip")
                       (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 7) || (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 4) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < 0)
                     else
-                      (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 10) || (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 6) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < 0)
+                      (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 10) || (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 2) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < -5)
                     end
                   end
 

@@ -25,7 +25,7 @@ class HourlyJob
           not_finished = false
         else
           low_floats = get_low_float_items(response)
-          katowice_2014_items = get_katowice_2014_items(response)
+          #katowice_2014_items = get_katowice_2014_items(response)
           nice_fade_items = get_nice_fade_items(response)
           blue_gem_items = get_blue_gem_items(response)
           good_keychain = get_good_keychain(response)
@@ -46,9 +46,9 @@ class HourlyJob
           if good_keychain_20.any?
             messages << "found good keychain 20: #{good_keychain_20.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
           end
-          if katowice_2014_items.any?
-            messages << "found katowice 2014: #{katowice_2014_items.map { |item| "#{item["market_name"]} - #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") } with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
-          end
+          #if katowice_2014_items.any?
+            #messages << "found katowice 2014: #{katowice_2014_items.map { |item| "#{item["market_name"]} - #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") } with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+          #end
           if nice_fade_items.any?
             messages << "found nice fade: #{nice_fade_items.map { |item| "#{item["market_name"]} - #{item["id"]} with fade percentage #{ item["fade_percentage"] } and above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
           end

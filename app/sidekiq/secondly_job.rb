@@ -91,7 +91,7 @@ class SecondlyJob
       response = call_empire_api
 
       if response.code == 200
-        katowice_2014_items = get_katowice_2014_items(response)
+        #katowice_2014_items = get_katowice_2014_items(response)
         blue_gem_items = get_blue_gem_items(response)
         nice_fade_items = get_nice_fade_items(response)
         m4_and_awp_fade = get_m4_and_awp_fade(response)
@@ -126,9 +126,9 @@ class SecondlyJob
           low_floats.each do |item|
             BidJob.perform_async(item, nil)
           end
-        elsif katowice_2014_items.any?
-          messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
-        end
+        #elsif katowice_2014_items.any?
+          #messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
+        #end
 
         messages
       else

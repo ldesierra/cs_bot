@@ -128,7 +128,7 @@ class SecondlyJob
           end
         #elsif katowice_2014_items.any?
           #messages << "Katowice 2014 items found: #{katowice_2014_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with stickers #{ item["stickers"]&.pluck("name") }" }.join(', ')}"
-        #end
+        end
 
         messages
       else

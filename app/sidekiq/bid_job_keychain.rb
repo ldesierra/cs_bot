@@ -4,11 +4,11 @@ require 'telegram/bot'
 class BidJobKeychain
   include Sidekiq::Job
 
-  API_URL = 'https://your-endpoint-x.com'
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
   TELEGRAM_TOKEN_2 = ENV["TELEGRAM_BOT_TOKEN_2"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
   TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
+  TELEGRAM_CHAT_ID_AGUS = ENV["TELEGRAM_CHAT_ID_AGUS"]
 
   def perform(item)
     begin
@@ -27,7 +27,7 @@ class BidJobKeychain
   private
 
   def good_expensive(item)
-    names = ["Hot Howl", "Hot Wurst", "Baby Karat T", "Baby Karat CT", "Diamond Dog", "Semi-Precious", 
+    names = ["Hot Howl", "Hot Wurst", "Baby Karat T", "Baby Karat CT", "Diamond Dog", "Semi-Precious",
     "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy",   #drboom
      "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent"]  #missing link com
 
@@ -46,17 +46,7 @@ class BidJobKeychain
   end
 
   def bid(item, amount)
-    api_key = ENV["next_buyer"].to_s == "0" ? ENV["api_key"] : ENV["api_key_bro"]
-
-    HTTParty.post(
-      "https://csgoempire.com/api/v2/trading/deposit/#{item["id"]}/bid",
-      headers: {
-        "Authorization" => "Bearer #{api_key}",
-        "Content-Type" => "application/json",
-        "Accept" => "application/json"
-      },
-      body: { bid_value: amount }.to_json
-    )
+    Bid.new(item["id"], amount).call
   end
 
   def item_message(item)
@@ -69,6 +59,9 @@ class BidJobKeychain
     end
     Telegram::Bot::Client.run(TELEGRAM_TOKEN_2) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: message)
+    end
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN_2) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_AGUS, text: message)
     end
   end
 end

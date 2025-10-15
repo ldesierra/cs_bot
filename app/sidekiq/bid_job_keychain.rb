@@ -9,13 +9,16 @@ class BidJobKeychain
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
   TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
   TELEGRAM_CHAT_ID_AGUS = ENV["TELEGRAM_CHAT_ID_AGUS"]
+  USD_50_KEYCHAINS = ["Hot Wurst", "Hot Howl", "Baby Karat CT", "Baby Karat T", "8 Ball IGL", "Lil' Ferno", "Butane Buddy", "Glitter Bomb", "Lil' Serpent", "Lil' Eldritch", "Lil' Boo", "Quick Silver"]
+  USD_20_KEYCHAINS = ["Semi-Precious", "Lil' Monster", "Diamond Dog"]
+  KEYCHAIN_NAMES = ["Die-cast AK", "Lil' Squirt", "Titeenium AWP", "Semi-Precious", "Baby Karat CT", "Baby Karat T", "Diner Dog", "Lil' Monster", "Diamond Dog", "Hot Wurst", "Hot Howl", "Lil' Chirp", "Piñatita", "Lil' Happy", "Lil' Prick", "Lil' Hero", "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent", "Lil' Eco", "Eye of Ball", "Lil' Yeti", "Hungry Eyes", "Flash Bomb", "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy"]
 
   def perform(item)
     begin
       message = item_message(item)
       send_telegram_message(message) if message.present?
 
-      if (good_expensive(item) && item["purchase_price"] < 60000) || (item["above_recommended_price"] < 0 && item["purchase_price"] < 6000)
+      if (good_usd_50_keychain(item) && item["purchase_price"] < 48000) || (good_usd_20_keychain(item) && item["purchase_price"] < 16000) || (good_other_keychain(item) && item["purchase_price"] > 1600)
         other_message = bid_for(item)
         send_telegram_message(other_message) if other_message.present?
       end
@@ -26,20 +29,33 @@ class BidJobKeychain
 
   private
 
-  def good_expensive(item)
-    names = ["Hot Howl", "Hot Wurst", "Baby Karat T", "Baby Karat CT", "Diamond Dog", "Semi-Precious",
-    "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy",   #drboom
-     "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent"]  #missing link com
+  def good_usd_50_keychain(item)
+    return false unless USD_50_KEYCHAINS.any? { |name| item["keychains"].first["name"]&.include?(name) }
 
-    return false unless names.any? { |name| item["keychains"].present? && item["keychains"].first["name"]&.include?(name) }
-    (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 10
+    (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 30)
+  end
+
+  def good_usd_20_keychain(item)
+    return false unless USD_20_KEYCHAINS.any? { |name| item["keychains"].first["name"]&.include?(name) }
+
+    (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 10)
+  end
+
+  def good_other_keychain(item)
+    return false unless KEYCHAIN_NAMES.any? { |name| item["keychains"].first["name"]&.include?(name) }
+    (item["purchase_price"].present? && item["suggested_price"].present? && (item["purchase_price"] - item["suggested_price"]).to_f / 162.8 < 5)
   end
 
   def bid_for(item)
     response = bid(item, item["purchase_price"])
 
     if response["success"]
-      return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 162.8}."
+      bidder = $bidded_by[item["id"]]
+      bidder = "AGUS" if bidder == "2"
+      bidder = "LUCAS" if bidder == "0"
+      bidder = "MATEO" if bidder == "1"
+
+      return "Bid placed for #{item["market_name"]} by #{bidder} with id #{item["id"]} amount #{item["purchase_price"].to_f / 162.8}."
     else
       return "Failed to bid on item #{item["market_name"]}. Error: #{response["message"]}"
     end

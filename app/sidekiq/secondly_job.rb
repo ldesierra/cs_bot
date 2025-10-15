@@ -14,6 +14,7 @@ class SecondlyJob
     messages = actual_call
     mateo_trades_messages = mateo_trades_call
     active_trades_messages = trades_call
+    agus_trades_messages = agus_trades_call
 
     if messages.present?
       send_telegram_message(messages&.join('\n'))
@@ -140,8 +141,6 @@ class SecondlyJob
           keychain_items.each do |item|
             BidJobKeychain.perform_async(item)
           end
-        elsif expensive_items.any?
-          messages << "found expensive: #{expensive_items.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
         elsif nice_gloves_items_mw.any? && (Time.now.hour <= 4 || Time.now.hour > 11)
           nice_gloves_items_mw.each do |item|
             BidJobGlovesMw.perform_async(item)

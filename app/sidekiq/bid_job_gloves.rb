@@ -83,7 +83,12 @@ class BidJobGloves
     response = bid(item, item["purchase_price"])
 
     if response["success"]
-      return "Bid placed for #{item["market_name"]} with id #{item["id"]} amount #{item["purchase_price"].to_f / 162.8}."
+      bidder = $bidded_by[item["id"]]
+      bidder = "AGUS" if bidder == "2"
+      bidder = "LUCAS" if bidder == "0"
+      bidder = "MATEO" if bidder == "1"
+
+      return "Bid placed for #{item["market_name"]} by #{bidder} with id #{item["id"]} amount #{item["purchase_price"].to_f / 162.8}."
     else
       return "Failed to bid on item #{item["market_name"]}. Error: #{response["message"]}"
     end

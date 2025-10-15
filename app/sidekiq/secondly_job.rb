@@ -4,7 +4,6 @@ require 'telegram/bot'
 class SecondlyJob
   include Sidekiq::Job
 
-  API_URL = 'https://your-endpoint-x.com'
   TELEGRAM_TOKEN_2 = ENV["TELEGRAM_BOT_TOKEN_2"]
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
@@ -22,12 +21,43 @@ class SecondlyJob
     if mateo_trades_messages.present?
       send_telegram_message_mateo(mateo_trades_messages&.join('\n'))
     end
+    if agus_trades_messages.present?
+      send_telegram_message_agus(agus_trades_messages&.join('\n'))
+    end
     if active_trades_messages.present?
       send_telegram_message_lucas(active_trades_messages&.join('\n'))
     end
   end
 
   private
+
+  def agus_trades_call
+    begin
+      messages = []
+
+      response_agus = HTTParty.get("https://csgoempire.com/api/v2/trading/user/trades",
+        headers: {
+          "accept" => "application/json",
+          "Authorization" => "Bearer #{ENV["api_key_agus"]}"
+        }
+      )
+
+      if response_agus.code == 200
+        trades_bro = response_agus["data"]["withdrawals"]
+
+        active_trades_bro = trades_bro.filter { |trade| trade["status"] == 3 }
+        if active_trades_bro.any?
+          active_trades_bro.each do |trade|
+            messages << "AGUS TENES UN Active trade CARA DE PIJA: #{trade["item"]["market_name"]}"
+          end
+        end
+      end
+
+      messages
+    rescue StandardError => e
+      send_telegram_message("Error: #{e.message}")
+    end
+  end
 
   def mateo_trades_call
     begin
@@ -230,6 +260,12 @@ class SecondlyJob
   def send_telegram_message_mateo(message)
     Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: message)
+    end
+  end
+
+  def send_telegram_message_agus(message)
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_AGUS, text: message)
     end
   end
 

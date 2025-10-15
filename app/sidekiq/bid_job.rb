@@ -4,11 +4,9 @@ require 'telegram/bot'
 class BidJob
   include Sidekiq::Job
 
-  API_URL = 'https://your-endpoint-x.com'
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
   TELEGRAM_TOKEN_2 = ENV["TELEGRAM_BOT_TOKEN_2"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
-  TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
 
   def perform(item, amount)
     if amount.present?

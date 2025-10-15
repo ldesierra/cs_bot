@@ -2,6 +2,12 @@ require 'httparty'
 require 'telegram/bot'
 
 class Bid
+  TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
+  TELEGRAM_TOKEN_2 = ENV["TELEGRAM_BOT_TOKEN_2"]
+  TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
+  TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
+  TELEGRAM_CHAT_ID_AGUS = ENV["TELEGRAM_CHAT_ID_AGUS"]
+
   def initialize(item, amount)
     @item = item
     @amount = amount
@@ -14,8 +20,12 @@ class Bid
 
     if bid_response["success"]
       $bidded_by[@item] = buyer
+      send_telegram_message_new_bidder(@item, buyer)
     elsif bid_response.dig("message_localized", "key") == "insufficient_balance"
+      send_telegram_message_failed(@item, buyer, $next_buyer)
       $bidded_by[@item] = $next_buyer
+    else
+      send_telegram_message_failed_other(@item, buyer)
     end
 
     return bid_response
@@ -53,5 +63,32 @@ class Bid
       },
       body: { bid_value: amount }.to_json
     )
+  end
+
+  def send_telegram_message_new_bidder(item, buyer)
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: "New bidder for #{item["market_name"]} is #{buyer}")
+    end
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: "New bidder for #{item["market_name"]} is #{buyer}")
+    end
+  end
+
+  def send_telegram_message_failed(item, buyer, next_buyer)
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: "Failed to bid for #{item["market_name"]} by #{buyer} going to #{next_buyer}")
+    end
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: "Failed to bid for #{item["market_name"]} by #{buyer} now going to #{next_buyer}")
+    end
+  end
+
+  def send_telegram_message_failed_other(item, buyer)
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: "Failed to bid for #{item["market_name"]} by #{buyer}")
+    end
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+      bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: "Failed to bid for #{item["market_name"]} by #{buyer}")
+    end
   end
 end

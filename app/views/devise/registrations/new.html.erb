@@ -1,0 +1,50 @@
+<div class="min-h-screen bg-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div class="text-center">
+      <h2 class="mt-6 text-3xl font-bold text-white">Create Account</h2>
+      <p class="mt-2 text-sm text-gray-400">Join us today</p>
+    </div>
+
+    <div class="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-8 shadow-2xl">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), class: "space-y-6") do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="space-y-4">
+          <div>
+            <%= f.label :email, class: "block text-sm font-medium text-gray-300 mb-2" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email",
+                class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+          </div>
+
+          <div>
+            <%= f.label :off_skin_balance, "Initial Off Skin Balance ($)", class: "block text-sm font-medium text-gray-300 mb-2" %>
+            <%= f.number_field :off_skin_balance, step: 0.01, min: 0, value: 0,
+                class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+            <p class="text-xs text-gray-500 mt-1">Your starting off-skin balance for trading (optional)</p>
+          </div>
+
+          <div>
+            <%= f.label :password, class: "block text-sm font-medium text-gray-300 mb-2" %>
+            <% if @minimum_password_length %>
+              <p class="text-xs text-gray-500 mb-2">(<%= @minimum_password_length %> characters minimum)</p>
+            <% end %>
+            <%= f.password_field :password, autocomplete: "new-password",
+                class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+          </div>
+
+          <div>
+            <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-300 mb-2" %>
+            <%= f.password_field :password_confirmation, autocomplete: "new-password",
+                class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.submit "Create Account", class: "w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-black bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 transform hover:scale-105 cursor-pointer" %>
+        </div>
+      <% end %>
+
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>

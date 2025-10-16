@@ -13,6 +13,7 @@ class HourlyJob
   KEYCHAIN_NAMES = ["Die-cast AK", "Lil' Squirt", "Titeenium AWP", "Semi-Precious", "Baby Karat CT", "Baby Karat T", "Diner Dog", "Lil' Monster", "Diamond Dog", "Hot Wurst", "Hot Howl", "Lil' Chirp", "Piñatita", "Lil' Happy", "Lil' Prick", "Lil' Hero", "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent", "Lil' Eco", "Eye of Ball", "Lil' Yeti", "Hungry Eyes", "Flash Bomb", "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy"]
 
   def perform
+    $hourly_sent ||= []
     page = 1
     not_finished = true
     messages = []

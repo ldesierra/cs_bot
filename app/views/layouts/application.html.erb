@@ -13,11 +13,77 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-black text-white">
+    <% if notice %>
+      <div class="fixed top-4 right-20 z-40 bg-green-900/90 backdrop-blur-sm border border-green-500/30 text-green-300 px-4 py-3 rounded-lg shadow-lg max-w-sm">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <%= notice %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="fixed top-4 right-20 z-40 bg-red-900/90 backdrop-blur-sm border border-red-500/30 text-red-300 px-4 py-3 rounded-lg shadow-lg max-w-sm">
+        <div class="flex items-center">
+          <svg class="w-5 h-5 mr-2 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+          </svg>
+          <%= alert %>
+        </div>
+      </div>
+    <% end %>
+
     <%= yield %>
+
+    <script>
+      function initProfileDropdown() {
+        const dropdownButton = document.getElementById('profile-dropdown-button');
+        const dropdownMenu = document.getElementById('profile-dropdown-menu');
+
+        if (dropdownButton && dropdownMenu) {
+          // Remove existing event listeners to prevent duplicates
+          dropdownButton.removeEventListener('click', handleDropdownClick);
+          document.removeEventListener('click', handleOutsideClick);
+
+          // Add event listeners
+          dropdownButton.addEventListener('click', handleDropdownClick);
+          document.addEventListener('click', handleOutsideClick);
+        }
+      }
+
+      function handleDropdownClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const dropdownMenu = document.getElementById('profile-dropdown-menu');
+        if (dropdownMenu) {
+          dropdownMenu.classList.toggle('hidden');
+        }
+      }
+
+      function handleOutsideClick(e) {
+        const dropdownButton = document.getElementById('profile-dropdown-button');
+        const dropdownMenu = document.getElementById('profile-dropdown-menu');
+
+        if (dropdownButton && dropdownMenu &&
+            !dropdownButton.contains(e.target) &&
+            !dropdownMenu.contains(e.target)) {
+          dropdownMenu.classList.add('hidden');
+        }
+      }
+
+      // Initialize on DOM ready
+      document.addEventListener('DOMContentLoaded', initProfileDropdown);
+
+      // Re-initialize on Turbo navigation (for Rails 7+ with Turbo)
+      document.addEventListener('turbo:load', initProfileDropdown);
+    </script>
   </body>
 </html>

@@ -132,7 +132,9 @@ class SecondlyJob
         nice_gloves_items_mw = get_nice_gloves_items_mw(response)
 
         if blue_gem_items.any?
-          messages << "Blue gem items found: #{blue_gem_items.map { |item| "#{item["market_name"]} with id #{item["id"]} with blue percentage #{ item["blue_percentage"] }" }.join(', ')}"
+          blue_gem_items.each do |item|
+            BidJobBlueGem.perform_async(item)
+          end
         elsif nice_fade_items.any? && (Time.now.hour <= 4 || Time.now.hour > 11)
           nice_fade_items.each do |item|
             BidJobFade.perform_async(item, false)

@@ -18,14 +18,17 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "telegram-bot-ruby"
 # Use Redis adapter to run Action Cable in production
-# gem "redis", ">= 4.0.1"
+gem "redis", ">= 4.0.1"
 
 gem "sidekiq"
 gem "sidekiq-scheduler"
-
+gem "pg", "~> 1.5.9"
 gem "foreman"
+gem "devise"
+gem "tailwindcss-rails"
 
 gem "whenever"
+
 
 gem "pry-rails", "~> 0.3.11"
 
@@ -57,6 +60,11 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+end
+
+group :production do
+  # Use production-ready gems
+  gem "rails_12factor"
 end
 
 group :development do

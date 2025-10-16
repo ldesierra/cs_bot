@@ -31,17 +31,17 @@ class BidJobGloves
 
   def good_omega(item)
     return false unless item["market_name"].include?("Sport Gloves | Omega")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 40) || (item["wear"] < 0.21 && item["above_recommended_price"] < 20) || (item["above_recommended_price"] < 10)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 40) || (item["wear"] < 0.21 && item["above_recommended_price"] < 20)
   end
 
   def good_slingshot(item)
     return false unless item["market_name"].include?("Sport Gloves | Slingshot")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 60) || (item["wear"] < 0.21 && item["above_recommended_price"] < 20) || (item["above_recommended_price"] < 10)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 60) || (item["wear"] < 0.21 && item["above_recommended_price"] < 20) || (item["above_recommended_price"] < 0)
   end
 
   def good_tiger_strike(item)
     return false unless item["market_name"].include?("Specialist Gloves | Tiger Strike")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 20) || (item["wear"] < 0.21 && item["above_recommended_price"] < 10) || (item["above_recommended_price"] < 3)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 20) || (item["wear"] < 0.21 && item["above_recommended_price"] < 10) || (item["above_recommended_price"] < 0)
   end
 
   def good_amphibious(item)
@@ -51,17 +51,17 @@ class BidJobGloves
 
   def good_marble_fade(item)
     return false unless item["market_name"].include?("Specialist Gloves | Marble Fade")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 20) || (item["wear"] < 0.21 && item["above_recommended_price"] < 10) || (item["above_recommended_price"] < 3)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 20) || (item["wear"] < 0.21 && item["above_recommended_price"] < 10) || (item["above_recommended_price"] < 0)
   end
 
   def good_king_snake(item)
     return false unless item["market_name"].include?("Driver Gloves | King Snake")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 70) || (item["wear"] < 0.21 && item["above_recommended_price"] < 15) || (item["above_recommended_price"] < 7)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 70) || (item["wear"] < 0.21 && item["above_recommended_price"] < 15) || (item["above_recommended_price"] < 4)
   end
 
   def good_imperial_plaid(item)
     return false unless item["market_name"].include?("Driver Gloves | Imperial Plaid")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 25) || (item["wear"] < 0.21 && item["above_recommended_price"] < 14) || (item["above_recommended_price"] < 10)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 25) || (item["wear"] < 0.21 && item["above_recommended_price"] < 14) || (item["above_recommended_price"] < 0)
   end
 
   def good_vices(item)
@@ -71,12 +71,12 @@ class BidJobGloves
 
   def good_nocts(item)
     return false unless item["market_name"].include?("Sport Gloves | Nocts")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 10) || (item["wear"] < 0.21 && item["above_recommended_price"] < 5) || (item["above_recommended_price"] < 1)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 10) || (item["wear"] < 0.21 && item["above_recommended_price"] < 5) || (item["above_recommended_price"] < -4)
   end
 
   def good_snow_leopards(item)
     return false unless item["market_name"].include?("Driver Gloves | Snow Leopard")
-    (item["wear"] < 0.18 && item["above_recommended_price"] < 27) || (item["wear"] < 0.21 && item["above_recommended_price"] < 18) || (item["above_recommended_price"] < 10)
+    (item["wear"] < 0.18 && item["above_recommended_price"] < 27) || (item["wear"] < 0.21 && item["above_recommended_price"] < 18) || (item["above_recommended_price"] < 3)
   end
 
   def bid_for(item)

@@ -1,0 +1,50 @@
+{
+  "name": "CS Trading App",
+  "description": "A Rails application for CS trading with Sidekiq background jobs",
+  "keywords": ["rails", "ruby", "trading", "sidekiq"],
+  "website": "https://github.com/yourusername/cs",
+  "repository": "https://github.com/yourusername/cs",
+  "success_url": "/",
+  "scripts": {
+    "postdeploy": "bundle exec rails db:migrate"
+  },
+  "env": {
+    "RAILS_ENV": {
+      "description": "Rails environment",
+      "value": "production"
+    },
+    "RAILS_SERVE_STATIC_FILES": {
+      "description": "Enable static file serving",
+      "value": "true"
+    },
+    "RAILS_LOG_LEVEL": {
+      "description": "Rails log level",
+      "value": "info"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:mini",
+      "as": "DATABASE"
+    },
+    {
+      "plan": "heroku-redis:mini",
+      "as": "REDIS"
+    }
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-ruby"
+    }
+  ]
+}

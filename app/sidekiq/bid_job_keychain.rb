@@ -18,7 +18,7 @@ class BidJobKeychain
       message = item_message(item)
       send_telegram_message(message) if message.present?
 
-      if (good_usd_50_keychain(item) && item["purchase_price"] < 48000) || (good_usd_20_keychain(item) && item["purchase_price"] < 16000) || (good_other_keychain(item) && item["purchase_price"] > 1600)
+      if (good_usd_50_keychain(item) && item["purchase_price"] < 48000) || (good_usd_20_keychain(item) && item["purchase_price"] < 16000) || (good_other_keychain(item) && item["purchase_price"] < 1600)
         other_message = bid_for(item)
         send_telegram_message(other_message) if other_message.present?
       end
@@ -50,7 +50,7 @@ class BidJobKeychain
     response = bid(item, item["purchase_price"])
 
     if response["success"]
-      bidder = $bidded_by[item["id"]]
+      bidder = Bidded.find_by(item_id: item["id"])&.bidded_by&.to_s
       bidder = "AGUS" if bidder == "2"
       bidder = "LUCAS" if bidder == "0"
       bidder = "MATEO" if bidder == "1"

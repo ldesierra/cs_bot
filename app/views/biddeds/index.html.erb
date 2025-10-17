@@ -1,0 +1,128 @@
+<% if user_signed_in? %>
+  <div class="min-h-screen bg-black">
+    <!-- Header -->
+    <div class="bg-gray-900 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div>
+            <h1 class="text-2xl font-bold text-white">Bidded Items</h1>
+            <p class="text-gray-400 mt-1">Track your bidded notifications</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <!-- Back to Home -->
+            <%= link_to "Back to Home", root_path, class: "bg-gray-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 cursor-pointer" %>
+
+            <!-- Profile Menu -->
+            <div class="relative">
+              <button class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors cursor-pointer" onclick="toggleProfileMenu()">
+                <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                  <span class="text-black font-medium text-sm"><%= current_user.email.first.upcase %></span>
+                </div>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div id="profileMenu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg border border-gray-700 z-50">
+                <div class="py-1">
+                  <div class="px-4 py-2 text-sm text-gray-300 border-b border-gray-700">
+                    <%= current_user.email %>
+                  </div>
+                  <%= link_to "Edit Profile", edit_user_registration_path, class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" %>
+                  <%= link_to "Reset Offskin Balance", edit_off_skin_balance_path, class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" %>
+                  <%= link_to "Sign Out", destroy_user_session_path, method: :delete, class: "block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bidded List -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <% if @biddeds.any? %>
+        <div class="grid gap-6">
+          <% @biddeds.each do |bidded| %>
+            <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:bg-gray-850 transition-colors">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-4 mb-3">
+                    <h3 class="text-xl font-semibold text-white">
+                      <%= bidded.item_id %>
+                    </h3>
+                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-medium">
+                      Bidded
+                    </span>
+                  </div>
+
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+                    <div>
+                      <span class="text-gray-400">Bidded By:</span>
+                      <span class="text-white ml-1"><%= bidded.bidded_by %></span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Created:</span>
+                      <span class="text-white ml-1"><%= bidded.created_at.strftime('%m/%d/%Y %H:%M') %></span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Item ID:</span>
+                      <span class="text-white ml-1"><%= bidded.item_id || 'N/A' %></span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Updated:</span>
+                      <span class="text-white ml-1"><%= bidded.updated_at.strftime('%m/%d/%Y %H:%M') %></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="text-gray-400 mb-4">
+            <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-white mb-2">No bidded items yet</h3>
+          <p class="text-gray-400 mb-6">Bidded notifications will appear here when they are created</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- JavaScript for Profile Menu -->
+  <script>
+    function toggleProfileMenu() {
+      const menu = document.getElementById('profileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const profileMenu = document.getElementById('profileMenu');
+      const profileButton = event.target.closest('button');
+
+      if (!profileButton || !profileButton.onclick || profileButton.onclick.toString().indexOf('toggleProfileMenu') === -1) {
+        profileMenu.classList.add('hidden');
+      }
+    });
+  </script>
+<% else %>
+  <!-- Sign in page for non-authenticated users -->
+  <div class="min-h-screen bg-black flex items-center justify-center">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-white mb-4">Welcome to CS</h1>
+      <p class="text-gray-400 mb-8">Your premium trading platform</p>
+
+      <div class="space-x-4">
+        <%= link_to "Sign In", new_user_session_path, class: "bg-orange-500 hover:bg-orange-600 text-black font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 cursor-pointer" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+

@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:off_skin_balance])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:off_skin_balance, :user_number, :admin_password])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:user_number])
   end
 end

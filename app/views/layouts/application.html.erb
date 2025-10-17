@@ -20,23 +20,37 @@
 
   <body class="bg-black text-white">
     <% if notice %>
-      <div class="fixed top-4 right-20 z-40 bg-green-900/90 backdrop-blur-sm border border-green-500/30 text-green-300 px-4 py-3 rounded-lg shadow-lg max-w-sm">
-        <div class="flex items-center">
-          <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-          </svg>
-          <%= notice %>
+      <div id="notice-notification" class="fixed top-4 right-20 z-40 bg-green-900/90 backdrop-blur-sm border border-green-500/30 text-green-300 px-4 py-3 rounded-lg shadow-lg max-w-sm cursor-pointer hover:bg-green-800/90 transition-all duration-300 ease-in-out">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <%= notice %>
+          </div>
+          <button onclick="closeNotification('notice-notification')" class="ml-3 text-green-400 hover:text-green-300 transition-colors duration-200">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
         </div>
       </div>
     <% end %>
 
     <% if alert %>
-      <div class="fixed top-4 right-20 z-40 bg-red-900/90 backdrop-blur-sm border border-red-500/30 text-red-300 px-4 py-3 rounded-lg shadow-lg max-w-sm">
-        <div class="flex items-center">
-          <svg class="w-5 h-5 mr-2 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-          </svg>
-          <%= alert %>
+      <div id="alert-notification" class="fixed top-4 right-20 z-40 bg-red-900/90 backdrop-blur-sm border border-red-500/30 text-red-300 px-4 py-3 rounded-lg shadow-lg max-w-sm cursor-pointer hover:bg-red-800/90 transition-all duration-300 ease-in-out">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <%= alert %>
+          </div>
+          <button onclick="closeNotification('alert-notification')" class="ml-3 text-red-400 hover:text-red-300 transition-colors duration-200">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
         </div>
       </div>
     <% end %>
@@ -76,6 +90,17 @@
             !dropdownButton.contains(e.target) &&
             !dropdownMenu.contains(e.target)) {
           dropdownMenu.classList.add('hidden');
+        }
+      }
+
+      function closeNotification(notificationId) {
+        const notification = document.getElementById(notificationId);
+        if (notification) {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateX(100%)';
+          setTimeout(() => {
+            notification.remove();
+          }, 300);
         }
       }
 

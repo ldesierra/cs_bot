@@ -16,8 +16,6 @@ class TransactionsController < ApplicationController
     end
 
     if @transaction.save
-      # Update user balance when new transaction is created
-      update_user_balance
       redirect_to root_path, notice: 'Transaction created successfully!'
     else
       render :new, status: :unprocessable_entity
@@ -31,13 +29,25 @@ class TransactionsController < ApplicationController
   def update
     @transaction = @portfolio.transactions.find(params[:id])
 
-    if @transaction.update(transaction_params)
-      # Update user balance when transaction is updated
-      update_user_balance
-      redirect_to root_path, notice: 'Transaction updated successfully!'
-    else
-      render :edit, status: :unprocessable_entity
+    Rails.logger.info "Updating transaction #{@transaction.id} with params: #{transaction_params.inspect}"
+
+    ActiveRecord::Base.transaction do
+      if @transaction.update(transaction_params)
+        Rails.logger.info "Transaction #{@transaction.id} updated successfully. Sell: #{@transaction.sell}, Buy: #{@transaction.buy_price}"
+        # Update user balance when transaction is updated
+        redirect_to root_path, notice: 'Transaction updated successfully!'
+      else
+        Rails.logger.error "Transaction update failed: #{@transaction.errors.full_messages}"
+        render :edit, status: :unprocessable_entity
+      end
     end
+  rescue ActiveRecord::RecordNotFound
+    Rails.logger.error "Transaction not found: #{params[:id]}"
+    redirect_to root_path, alert: 'Transaction not found.'
+  rescue => e
+    Rails.logger.error "Error updating transaction: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
+    redirect_to root_path, alert: 'An error occurred while updating the transaction. Please try again.'
   end
 
   private
@@ -48,13 +58,5 @@ class TransactionsController < ApplicationController
 
   def transaction_params
     params.require(:transaction).permit(:buy_price, :sell, item_attributes: [:name, :float, :fade, :blue, :stickers])
-  end
-
-  def update_user_balance
-    # Calculate balance: off_skin_balance + sum of sell prices - sum of buy prices
-    total_sells = @portfolio.transactions.where.not(sell: nil).sum(:sell)
-    total_buys = @portfolio.transactions.sum(:buy_price)
-    new_balance = current_user.off_skin_balance + total_sells - total_buys
-    current_user.update(balance: new_balance)
   end
 end

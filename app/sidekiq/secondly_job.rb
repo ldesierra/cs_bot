@@ -5,6 +5,7 @@ class SecondlyJob
   include Sidekiq::Job
 
   TELEGRAM_TOKEN_2 = ENV["TELEGRAM_BOT_TOKEN_2"]
+  TELEGRAM_TOKEN_3 = ENV["TELEGRAM_BOT_TOKEN_3"]
   TELEGRAM_TOKEN = ENV["TELEGRAM_BOT_TOKEN"]
   TELEGRAM_CHAT_ID = ENV["TELEGRAM_CHAT_ID"]
   TELEGRAM_CHAT_ID_BRO = ENV["TELEGRAM_CHAT_ID_BRO"]
@@ -130,8 +131,13 @@ class SecondlyJob
         keychain_items = get_keychain_items(response)
         nice_gloves_items = get_nice_gloves_items_ft(response)
         nice_gloves_items_mw = get_nice_gloves_items_mw(response)
+        snipes = get_snipes(response)
 
-        if blue_gem_items.any?
+        if snipes.any?
+          snipes.each do |item|
+            BidJobSnipe.perform_async(item)
+          end
+        elsif blue_gem_items.any?
           blue_gem_items.each do |item|
             BidJobBlueGem.perform_async(item)
           end
@@ -174,6 +180,12 @@ class SecondlyJob
     names = ["Specialist Gloves | Marble Fade", "Sport Gloves | Omega", "Sport Gloves | Slingshot", "Sport Gloves | Amphibious", "Hand Wraps | Cobalt Skulls", "Driver Gloves | Imperial Plaid", "Driver Gloves | King Snake", "Sport Gloves | Nocts", "Specialist Gloves | Tiger Strike", "Sport Gloves | Vice", "Driver Gloves | Snow Leopard"]
     response["data"].filter { |item| names.any? { |name| item["market_name"].include?(name) } }
                     .filter { |item| item["wear"].to_f >= 0.151 && item["wear"].to_f <= 0.25 }
+  end
+
+  def get_snipes(response)
+    names = Snipe.pluck(:name_to_seek)
+
+    response["data"].filter { |item| names.any? { |name| item["market_name"] == name } }
   end
 
   def get_nice_gloves_items_mw(response)
@@ -259,19 +271,19 @@ class SecondlyJob
   end
 
   def send_telegram_message_mateo(message)
-    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN_3) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_BRO, text: message)
     end
   end
 
   def send_telegram_message_agus(message)
-    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN_3) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_AGUS, text: message)
     end
   end
 
   def send_telegram_message_lucas(message)
-    Telegram::Bot::Client.run(TELEGRAM_TOKEN) do |bot|
+    Telegram::Bot::Client.run(TELEGRAM_TOKEN_3) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID, text: message)
     end
   end

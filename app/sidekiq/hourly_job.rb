@@ -13,12 +13,11 @@ class HourlyJob
   KEYCHAIN_NAMES = ["Die-cast AK", "Lil' Squirt", "Titeenium AWP", "Semi-Precious", "Baby Karat CT", "Baby Karat T", "Diner Dog", "Lil' Monster", "Diamond Dog", "Hot Wurst", "Hot Howl", "Lil' Chirp", "Piñatita", "Lil' Happy", "Lil' Prick", "Lil' Hero", "Lil' Boo", "Quick Silver", "Lil' Eldritch", "Lil' Serpent", "Lil' Eco", "Eye of Ball", "Lil' Yeti", "Hungry Eyes", "Flash Bomb", "Glitter Bomb", "8 Ball IGL", "Lil' Ferno", "Butane Buddy"]
 
   def perform
-    $hourly_sent ||= []
     page = 1
     not_finished = true
     messages = []
 
-    while not_finished &&
+    while not_finished
       response = call_empire_api(page)
       if response.code == 200
         if response["data"].empty?
@@ -34,28 +33,92 @@ class HourlyJob
           nice_gloves_items_mw = get_nice_gloves_items_mw(response)
 
           if low_floats.any?
-            messages << "found low float: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+            low_floats.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "low float")
+                messages << "found low float: #{low_floats.map { |item| "#{item["market_name"]} - #{item["id"]} with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+              end
+            end
           end
           if good_keychain.any?
-            messages << "found good keychain: #{good_keychain.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+            good_keychain.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "good keychain")
+                messages << "found good keychain: #{good_keychain.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+              end
+            end
           end
           if good_keychain_50.any?
-            messages << "found good keychain 50: #{good_keychain_50.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+            good_keychain_50.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "good keychain 50")
+                messages << "found good keychain 50: #{good_keychain_50.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+              end
+            end
           end
           if good_keychain_20.any?
-            messages << "found good keychain 20: #{good_keychain_20.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+            good_keychain_20.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "good keychain 20")
+                messages << "found good keychain 20: #{good_keychain_20.map { |item| "#{item["market_name"]} - #{item["id"]} (charm: #{ item["keychains"]&.dig(0, "name") }) and weapon price: #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+              end
+            end
           end
           if nice_fade_items.any?
-            messages << "found nice fade: #{nice_fade_items.map { |item| "#{item["market_name"]} - #{item["id"]} with fade percentage #{ item["fade_percentage"] } and above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
-          end
-          if blue_gem_items.any?
-            messages << "found blue gem: #{blue_gem_items.map { |item| "#{item["market_name"]} - #{item["id"]} with blue percentage #{ item["blue_percentage"] } and above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 }" }.join(', ')}"
+            nice_fade_items.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "nice fade")
+                messages << "found nice fade: #{item["market_name"]} - #{item["id"]} with fade percentage #{ item["fade_percentage"] } and above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 }"
+              end
+            end
           end
           if nice_gloves_items.any?
-            messages << "found nice gloves: #{nice_gloves_items.map { |item| "#{item["market_name"]} - #{item["id"]} with above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 } with wear #{item["wear"]}" }.join(', ')} }"
+            nice_gloves_items.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "nice gloves")
+                messages << "found nice gloves: #{item["market_name"]} - #{item["id"]} with above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 } with wear #{item["wear"]}"
+              end
+            end
           end
           if nice_gloves_items_mw.any?
-            messages << "found nice gloves: #{nice_gloves_items_mw.map { |item| "#{item["market_name"]} - #{item["id"]} with above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 } with wear #{item["wear"]}" }.join(', ')} }"
+            nice_gloves_items_mw.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "nice gloves mw")
+                messages << "found nice gloves mw: #{item["market_name"]} - #{item["id"]} with above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 } with wear #{item["wear"]}"
+              end
+            end
+          end
+          if blue_gem_items.any?
+            blue_gem_items.each do |item|
+              database_item = Item.find_or_create_by(name: item["market_name"], item_id: item["id"].to_s, float: item["wear"], fade: item["fade_percentage"], blue: item["blue_percentage"])
+              if HourlySent.where(item: database_item).exists?
+                next
+              else
+                HourlySent.create(date: DateTime.now, item: database_item, buy_price: (item["purchase_price"].to_f / 162.8), description: "blue gem")
+                messages << "found blue gem: #{item["market_name"]} - #{item["id"]} with blue percentage #{ item["blue_percentage"] } and above price #{ item["above_recommended_price"] } with price #{ item["purchase_price"].to_f / 162.8 }"
+              end
+            end
           end
         end
       end
@@ -91,28 +154,28 @@ class HourlyJob
     response["data"].filter { |item| !item["market_name"]&.include?("Charm") }
                     &.filter { |item| item["keychains"].present? }
                     &.filter { |item| good_usd_50_keychain(item)}
-                    &.filter { |item| !($hourly_sent.include?(item["id"])) }
+                    &.filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
   end
 
   def get_good_keychain_20(response)
     response["data"].filter { |item| !item["market_name"]&.include?("Charm") }
                     &.filter { |item| item["keychains"].present? }
                     &.filter { |item| good_usd_20_keychain(item)}
-                    &.filter { |item| !($hourly_sent.include?(item["id"])) }
+                    &.filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
   end
 
   def get_good_keychain(response)
     response["data"].filter { |item| !item["market_name"]&.include?("Charm") }
                     &.filter { |item| item["keychains"].present? }
                     &.filter { |item| good_other_keychain(item)}
-                    &.filter { |item| !($hourly_sent.include?(item["id"])) }
+                    &.filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
   end
 
   def get_nice_gloves_items(response)
     names = ["Specialist Gloves | Crimson Web", "Specialist Gloves | Marble Fade", "Driver Gloves | Imperial Plaid", "Driver Gloves | King Snake", "Sport Gloves | Nocts", "Specialist Gloves | Tiger Strike", "Driver Gloves | Snow Leopard"]
     items = response["data"].filter { |item| names.any? { |name| item["market_name"].include?(name) } }
                             .filter { |item| item["wear"].to_f >= 0.151 && item["wear"].to_f <= 0.25 }
-                            .filter { |item| !($hourly_sent.include?(item["id"])) }
+                            .filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
 
     items.filter { |item| good_omega(item) || good_slingshot(item) || good_marble_fade(item) || good_tiger_strike(item) || good_amphibious(item) || good_king_snake(item) || good_imperial_plaid(item) || good_vices(item) || good_nocts(item) || good_snow_leopards(item) || good_general_gloves(item) }
   end
@@ -121,7 +184,7 @@ class HourlyJob
     names = ["Specialist Gloves | Marble Fade", "Sport Gloves | Omega", "Sport Gloves | Slingshot", "Sport Gloves | Amphibious", "Hand Wraps | Cobalt Skulls", "Driver Gloves | Imperial Plaid", "Driver Gloves | King Snake", "Sport Gloves | Nocts", "Specialist Gloves | Tiger Strike", "Sport Gloves | Vice", "Driver Gloves | Snow Leopard"]
     items = response["data"].filter { |item| names.any? { |name| item["market_name"].include?(name) } }
                             .filter { |item| item["wear"].to_f >= 0.071 && item["wear"].to_f <= 0.1 }
-                            .filter { |item| !($hourly_sent.include?(item["id"])) }
+                            .filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
 
     items.filter { |item| good_omega(item) || good_slingshot(item) || good_marble_fade(item) || good_tiger_strike(item) || good_amphibious(item) || good_king_snake(item) || good_imperial_plaid(item) || good_vices(item) || good_nocts(item) || good_snow_leopards(item) || good_general_gloves(item) }
   end
@@ -182,12 +245,12 @@ class HourlyJob
 
   def get_katowice_2014_items(response)
     response["data"].filter { |item| item["stickers"]&.pluck("name")&.any? {|s| s&.include?("(Holo) | Katowice 2014") } }
-                    .filter { |item| !($hourly_sent.include?(item["id"])) }
+                    .filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
   end
 
   def get_nice_fade_items(response)
     items = response["data"].filter { |item| item["fade_percentage"] && item["fade_percentage"].to_f >= 95 }
-                            .filter { |item| !($hourly_sent.include?(item["id"])) }
+                            .filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
 
     items.filter { |item| good_m4_fade(item) || good_awp_fade(item) || good_paracord_fade(item) || good_talon_fade(item) || good_shit_fade(item) || good_fade(item) }
 
@@ -226,13 +289,13 @@ class HourlyJob
   def get_blue_gem_items(response)
     response["data"].filter { |item| item["blue_percentage"] && item["blue_percentage"].to_f >= 50 }
                     .filter { |item| item["above_recommended_price"] < 20 }
-                    .filter { |item| !($hourly_sent.include?(item["id"])) }
+                    .filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
   end
 
   def get_low_float_items(response)
     response["data"].filter { |item| item["wear"] && item["wear"] <= 0.000 }
                     .filter { |item| item["above_recommended_price"] < 20 }
-                    .filter { |item| !($hourly_sent.include?(item["id"])) }
+                    .filter { |item| !(HourlySent.joins(:item).where(item: { id: item["id"] }).exists?) }
   end
 
   def send_telegram_message(message)

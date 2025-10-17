@@ -11,6 +11,13 @@
 
         <div class="space-y-4">
           <div>
+            <%= f.label :user_number, "User Number", class: "block text-sm font-medium text-gray-300 mb-2" %>
+            <%= f.text_field :user_number, autocomplete: "user_number",
+                class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+            <p class="text-xs text-gray-500 mt-1">A unique identifier for your account</p>
+          </div>
+
+          <div>
             <%= f.label :email, class: "block text-sm font-medium text-gray-300 mb-2" %>
             <%= f.email_field :email, autofocus: true, autocomplete: "email",
                 class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
@@ -36,6 +43,13 @@
             <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-300 mb-2" %>
             <%= f.password_field :password_confirmation, autocomplete: "new-password",
                 class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+          </div>
+
+          <div>
+            <%= f.label :admin_password, "Admin Password", class: "block text-sm font-medium text-gray-300 mb-2" %>
+            <%= f.password_field :admin_password, autocomplete: "off",
+                class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+            <p class="text-xs text-gray-500 mt-1">Required admin password for account creation</p>
           </div>
         </div>
 

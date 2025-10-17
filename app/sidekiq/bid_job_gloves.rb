@@ -83,7 +83,7 @@ class BidJobGloves
     response = bid(item, item["purchase_price"])
 
     if response["success"]
-      bidder = $bidded_by[item["id"]]
+      bidder = Bidded.find_by(item_id: item["id"])&.bidded_by&.to_s
       bidder = "AGUS" if bidder == "2"
       bidder = "LUCAS" if bidder == "0"
       bidder = "MATEO" if bidder == "1"

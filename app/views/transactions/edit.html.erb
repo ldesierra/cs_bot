@@ -32,14 +32,6 @@
                 required: true %>
         </div>
 
-        <!-- Sell Price -->
-        <div>
-          <%= form.label :sell, "Sell Price ($)", class: "block text-sm font-medium text-gray-300" %>
-          <%= form.number_field :sell,
-                class: "mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-400 text-white bg-gray-800 rounded-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm",
-                placeholder: "Enter sell price (optional)",
-                step: 0.01 %>
-        </div>
 
         <!-- Item Details -->
         <div class="border-t border-gray-700 pt-4">
@@ -86,7 +78,7 @@
                     placeholder: "0",
                     step: 0.1,
                     min: 0,
-                    max: 100 %>
+                    max: 99.99 %>
             </div>
 
             <!-- Stickers -->

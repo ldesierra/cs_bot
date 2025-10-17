@@ -11,6 +11,12 @@
 
         <div class="space-y-4">
           <div>
+            <%= f.label :user_number, class: "block text-sm font-medium text-gray-300 mb-2" %>
+            <%= f.text_field :user_number, autocomplete: "user_number",
+                class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>
+          </div>
+
+          <div>
             <%= f.label :email, class: "block text-sm font-medium text-gray-300 mb-2" %>
             <%= f.email_field :email, autofocus: true, autocomplete: "email",
                 class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200" %>

@@ -12,6 +12,10 @@ class BidJobFade
 
   def perform(item, special = false)
     begin
+      # Check if current user has already seen this item
+      current_user = get_current_user
+      return if current_user&.has_seen_item?(item["id"])
+
       message = item_message(item)
       send_telegram_message(message) if message.present?
 
@@ -26,10 +30,8 @@ class BidJobFade
                       (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 10) || (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 6) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < 0.5)
                     elsif item["market_name"].include?("Talon")
                       (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 20) || (item["fade_percentage"].to_f >= 97.5 && item["above_recommended_price"] < 7) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < 2)
-                    elsif item["market_name"].include?("Gut") || item["market_name"].include?("Navaja") || item["market_name"].include?("Flip")
-                      (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 7) || (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 4) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < 0)
                     else
-                      (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 10) || (item["fade_percentage"].to_f >= 98 && item["above_recommended_price"] < 2) || (item["fade_percentage"].to_f >= 96 && item["above_recommended_price"] < -5)
+                      (item["fade_percentage"].to_f >= 99 && item["above_recommended_price"] < 10) || (item["fade_percentage"].to_f >= 95 && item["above_recommended_price"] < -10)
                     end
                   end
 
@@ -37,6 +39,9 @@ class BidJobFade
         other_message = bid_for(item)
         send_telegram_message(other_message) if other_message.present?
       end
+
+      # Mark item as seen by current user
+      current_user&.mark_item_as_seen(item["id"])
     rescue StandardError => e
       send_telegram_message("Error: #{e.message}")
     end
@@ -48,7 +53,7 @@ class BidJobFade
     response = bid(item, item["purchase_price"])
 
     if response["success"]
-      bidder = $bidded_by[item["id"]]
+      bidder = Bidded.find_by(item_id: item["id"])&.bidded_by&.to_s
       bidder = "AGUS" if bidder == "2"
       bidder = "LUCAS" if bidder == "0"
       bidder = "MATEO" if bidder == "1"
@@ -77,5 +82,10 @@ class BidJobFade
     Telegram::Bot::Client.run(TELEGRAM_TOKEN_2) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_AGUS, text: message)
     end
+  end
+
+  def get_current_user
+    current_buyer = $next_buyer || ENV["next_buyer"].to_s
+    User.find_by(user_number: current_buyer)
   end
 end

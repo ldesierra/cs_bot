@@ -9,7 +9,7 @@ class Bid
   TELEGRAM_CHAT_ID_AGUS = ENV["TELEGRAM_CHAT_ID_AGUS"]
 
   def initialize(item_id, amount)
-    @item_id = item_id
+    @item_id = item_id.to_s
     @amount = amount
     @next_buyer_for_this_call = next_buyer
   end
@@ -19,11 +19,11 @@ class Bid
     $next_buyer = (buyer == "2" ? "0" : (buyer.to_i + 1).to_s)
 
     if bid_response["success"]
-      $bidded_by[@item_id] = buyer
+      Bidded.find_or_create_by(item_id: @item_id, bidded_by: buyer)
       send_telegram_message_new_bidder(@item_id, buyer)
     elsif bid_response.dig("message_localized", "key") == "insufficient_balance"
       send_telegram_message_failed(@item_id, buyer, $next_buyer)
-      $bidded_by[@item_id] = $next_buyer
+      Bidded.find_or_create_by(item_id: @item_id, bidded_by: $next_buyer)
     else
       send_telegram_message_failed_other(@item_id, buyer)
     end
@@ -34,8 +34,8 @@ class Bid
   private
 
   def buyer
-    $bidded_by ||= {}
-    $bidded_by.keys.include?(@item_id) ? $bidded_by[@item_id] : @next_buyer_for_this_call
+    bidded = Bidded.where(item_id: @item_id).order(created_at: :desc).first
+    bidded&.bidded_by || @next_buyer_for_this_call
   end
 
   def next_buyer

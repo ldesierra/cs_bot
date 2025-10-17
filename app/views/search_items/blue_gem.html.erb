@@ -1,0 +1,186 @@
+<% if user_signed_in? %>
+  <div class="min-h-screen bg-black">
+    <!-- Header -->
+    <div class="bg-gray-900 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div>
+            <h1 class="text-3xl font-bold text-white">Blue Gem Items</h1>
+            <p class="text-gray-400 mt-1">High blue percentage items from Empire API</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <%= link_to "Back to Search", search_items_path, class: "bg-gray-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer" %>
+            <%= link_to "Back to Home", root_path, class: "bg-orange-500 hover:bg-orange-600 text-black font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <% if @error.present? %>
+        <div class="bg-red-900 border border-red-700 rounded-lg p-4 mb-6">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-red-300"><%= @error %></span>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @blue_gem_items.present? %>
+        <div class="mb-6">
+          <div class="bg-green-900 border border-green-700 rounded-lg p-4">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="text-green-300">Found <%= @blue_gem_items.count %> blue gem items with ≥50% blue percentage</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-6">
+          <% @blue_gem_items.each do |item| %>
+            <%
+              viewed_by_current_user = current_user.has_seen_item?(item["id"])
+              border_class = if item["market_name"]&.include?("Knife") || item["market_name"]&.include?("Gloves") || item["market_name"]&.include?("Karambit") || item["market_name"]&.include?("Bayonet") || item["market_name"]&.include?("Shadow Daggers")
+                "border-yellow-500"
+              elsif item["type"]&.include?("Covert")
+                "border-red-500"
+              elsif item["type"]&.include?("Classified")
+                "border-pink-500"
+              elsif item["type"]&.include?("Restricted")
+                "border-purple-500"
+              else
+                "border-blue-500"
+              end
+            %>
+            <div id="item-<%= item['id'] %>" class="<%= viewed_by_current_user ? 'bg-gray-800 border-gray-700 opacity-60' : 'bg-gray-900' %> border-2 <%= border_class %> rounded-lg p-6 hover:bg-gray-850 transition-colors">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-4 mb-3">
+                    <h3 class="<%= viewed_by_current_user ? 'text-gray-400' : 'text-white' %> text-xl font-semibold">
+                      <%= item["market_name"] || "Unknown Item" %>
+                    </h3>
+                    <span class="bg-blue-500 text-white px-2 py-1 rounded text-sm font-medium">
+                      <%= item["blue_percentage"] %>% Blue
+                    </span>
+                    <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm font-medium">
+                      <%= item["above_recommended_price"] %>% Above Recommended Price
+                    </span>
+                    <% if item["purchase_price"].present? %>
+                      <span class="bg-orange-500 text-black px-2 py-1 rounded text-sm font-medium">
+                        $<%= sprintf("%.2f", item["purchase_price"].to_f / 162.8) %>
+                      </span>
+                    <% end %>
+                    <% if viewed_by_current_user %>
+                      <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
+                        ✓ Viewed
+                      </span>
+                    <% end %>
+                  </div>
+
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span class="text-gray-400">Float:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1"><%= item["wear"] ? sprintf("%.6f", item["wear"]) : "N/A" %></span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Blue:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1"><%= item["blue_percentage"] ? "#{item["blue_percentage"]}%" : "N/A" %></span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Price:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1">
+                        <% if item["purchase_price"].present? %>
+                          $<%= sprintf("%.2f", item["purchase_price"].to_f / 162.8) %>
+                        <% else %>
+                          N/A
+                        <% end %>
+                      </span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Type:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1">
+                        <% if item["market_name"]&.include?("Knife") %>
+                          <span class="text-yellow-400">Knife</span>
+                        <% elsif item["market_name"]&.include?("M4A1-S") %>
+                          <span class="text-blue-400">M4A1-S</span>
+                        <% elsif item["market_name"]&.include?("AWP") %>
+                          <span class="text-red-400">AWP</span>
+                        <% elsif item["market_name"]&.include?("AK-47") %>
+                          <span class="text-orange-400">AK-47</span>
+                        <% else %>
+                          <span class="text-gray-400">Other</span>
+                        <% end %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <% if item["stickers"].present? && item["stickers"].any? %>
+                    <div class="mt-3">
+                      <span class="text-gray-400 text-sm">Stickers:</span>
+                      <div class="flex flex-wrap gap-1 mt-1">
+                        <% item["stickers"].first(3).each do |sticker| %>
+                          <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                            <%= sticker["name"] %>
+                          </span>
+                        <% end %>
+                        <% if item["stickers"].length > 3 %>
+                          <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                            +<%= item["stickers"].length - 3 %> more
+                          </span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col space-y-2 ml-4">
+                  <%= link_to "View Item", "https://csgoempire.com/item/#{item['id']}", target: "_blank", class: "bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-3 rounded transition-colors cursor-pointer" %>
+                  <% if viewed_by_current_user %>
+                    <button class="bg-gray-500 text-white text-sm font-medium py-2 px-3 rounded cursor-not-allowed" disabled>
+                      ✓ Viewed
+                    </button>
+                  <% else %>
+                    <%= form_with url: mark_item_as_viewed_search_items_path, method: :patch, class: "inline mark-as-viewed-form", data: { item_id: item['id'] } do |form| %>
+                      <%= form.hidden_field :item_id, value: item['id'] %>
+                      <%= form.submit "Mark as Viewed", class: "bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-3 rounded transition-colors cursor-pointer" %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="text-gray-400 mb-4">
+            <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-white mb-2">No blue gem items found</h3>
+          <p class="text-gray-400 mb-6">No items with high blue percentage are currently available</p>
+          <%= link_to "Try Again", blue_gem_search_items_path, class: "bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <!-- Sign in page for non-authenticated users -->
+  <div class="min-h-screen bg-black flex items-center justify-center">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-white mb-4">Welcome to CS</h1>
+      <p class="text-gray-400 mb-8">Your premium trading platform</p>
+
+      <div class="space-x-4">
+        <%= link_to "Sign In", new_user_session_path, class: "bg-orange-500 hover:bg-orange-600 text-black font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 cursor-pointer" %>
+      </div>
+    </div>
+  </div>
+<% end %>

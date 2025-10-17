@@ -1,0 +1,132 @@
+<% if user_signed_in? %>
+  <div class="min-h-screen bg-black">
+    <!-- Header -->
+    <div class="bg-gray-900 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div>
+            <h1 class="text-3xl font-bold text-white">Search Items</h1>
+            <p class="text-gray-400 mt-1">Find and analyze CS:GO items from Empire API</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <%= link_to "Back to Home", root_path, class: "bg-gray-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Options -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Fade Items Card -->
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:bg-gray-850 transition-colors">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Fade Items</h3>
+              <p class="text-gray-400 text-sm">High fade percentage knives and weapons</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <%= image_tag "fade.png", alt: "Fade Items", class: "w-full h-32 object-cover rounded-lg" %>
+          </div>
+          <%= link_to "Search Fade Items", fade_search_items_path, class: "w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer text-center block" %>
+        </div>
+
+        <!-- Blue Gem Items Card -->
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:bg-gray-850 transition-colors">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Blue Gem Items</h3>
+              <p class="text-gray-400 text-sm">High blue percentage AK-47s</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <%= image_tag "blue_gem.png", alt: "Blue Gem Items", class: "w-full h-32 object-cover rounded-lg" %>
+          </div>
+          <%= link_to "Search Blue Gem Items", blue_gem_search_items_path, class: "w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer text-center block" %>
+        </div>
+
+        <!-- Low Float Items Card -->
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:bg-gray-850 transition-colors">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Low Float Items</h3>
+              <p class="text-gray-400 text-sm">Items with extremely low float values</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <%= image_tag "low_float.png", alt: "Low Float Items", class: "w-full h-32 object-cover rounded-lg" %>
+          </div>
+          <%= link_to "Search Low Float Items", low_float_search_items_path, class: "w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer text-center block" %>
+        </div>
+
+        <!-- Gloves Items Card -->
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:bg-gray-850 transition-colors">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Premium Gloves</h3>
+              <p class="text-gray-400 text-sm">High-quality gloves in good condition</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <%= image_tag "gloves.png", alt: "Premium Gloves", class: "w-full h-32 object-cover rounded-lg" %>
+          </div>
+          <%= link_to "Search Premium Gloves", gloves_search_items_path, class: "w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer text-center block" %>
+        </div>
+
+        <!-- Keychain Items Card -->
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-6 hover:bg-gray-850 transition-colors">
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-amber-500 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-white">Keychain Items</h3>
+              <p class="text-gray-400 text-sm">Rare keychain collectibles</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <%= image_tag "keychai.png", alt: "Keychain Items", class: "w-full h-32 object-cover rounded-lg" %>
+          </div>
+          <%= link_to "Search Keychain Items", keychain_search_items_path, class: "w-full bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer text-center block" %>
+        </div>
+
+      </div>
+    </div>
+  </div>
+<% else %>
+  <!-- Sign in page for non-authenticated users -->
+  <div class="min-h-screen bg-black flex items-center justify-center">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-white mb-4">Welcome to CS</h1>
+      <p class="text-gray-400 mb-8">Your premium trading platform</p>
+
+      <div class="space-x-4">
+        <%= link_to "Sign In", new_user_session_path, class: "bg-orange-500 hover:bg-orange-600 text-black font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 cursor-pointer" %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,270 @@
+<% if user_signed_in? %>
+  <div class="min-h-screen bg-black">
+    <!-- Header -->
+    <div class="bg-gray-900 border-b border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div>
+            <h1 class="text-3xl font-bold text-white">Low Float Items</h1>
+            <p class="text-gray-400 mt-1">Items with extremely low float values from Empire API</p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <!-- Page Selector -->
+            <% if @total_pages > 1 %>
+              <div class="flex items-center space-x-2">
+                <label for="page-selector" class="text-gray-300 text-sm font-medium">Page:</label>
+                <select id="page-selector" onchange="goToPage(this.value)" class="bg-gray-700 border border-gray-600 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                  <% (1..@total_pages).each do |page_num| %>
+                    <option value="<%= page_num %>" <%= 'selected' if page_num == @current_page %>>
+                      <%= page_num %>
+                    </option>
+                  <% end %>
+                </select>
+                <span class="text-gray-400 text-sm">of <%= @total_pages %></span>
+              </div>
+            <% end %>
+
+            <%= link_to "Back to Search", search_items_path, class: "bg-gray-600 hover:bg-gray-500 text-white font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer" %>
+            <%= link_to "Back to Home", root_path, class: "bg-orange-500 hover:bg-orange-600 text-black font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <% if @error.present? %>
+        <div class="bg-red-900 border border-red-700 rounded-lg p-4 mb-6">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-red-300"><%= @error %></span>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @low_float_items.present? %>
+        <div class="mb-6">
+          <div class="bg-green-900 border border-green-700 rounded-lg p-4">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="text-green-300">Found <%= @low_float_items.count %> items with float values ≤ 0.001 (Page <%= @current_page %> of <%= @total_pages %>)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-6">
+          <% @low_float_items.each do |item| %>
+            <%
+              viewed_by_current_user = current_user.has_seen_item?(item["id"])
+              border_class = if item["market_name"]&.include?("Knife") || item["market_name"]&.include?("Gloves") || item["market_name"]&.include?("Karambit") || item["market_name"]&.include?("Bayonet") || item["market_name"]&.include?("Shadow Daggers")
+                "border-yellow-500"
+              elsif item["type"]&.include?("Covert")
+                "border-red-500"
+              elsif item["type"]&.include?("Classified")
+                "border-pink-500"
+              elsif item["type"]&.include?("Restricted")
+                "border-purple-500"
+              else
+                "border-blue-500"
+              end
+            %>
+            <div id="item-<%= item['id'] %>" class="<%= viewed_by_current_user ? 'bg-gray-800 border-gray-700 opacity-60' : 'bg-gray-900' %> border-2 <%= border_class %> rounded-lg p-6 hover:bg-gray-850 transition-colors">
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="flex items-center space-x-4 mb-3">
+                    <h3 class="<%= viewed_by_current_user ? 'text-gray-400' : 'text-white' %> text-xl font-semibold">
+                      <%= item["market_name"] || "Unknown Item" %>
+                    </h3>
+                    <span class="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium">
+                      Float: <%= sprintf("%.6f", item["wear"]) %>
+                    </span>
+                    <% if item["above_recommended_price"].present? %>
+                      <span class="bg-purple-500 text-white px-2 py-1 rounded text-sm font-medium">
+                        <%= item["above_recommended_price"] %>% Above Recommended Price
+                      </span>
+                    <% end %>
+                    <% if item["purchase_price"].present? %>
+                      <span class="bg-orange-500 text-black px-2 py-1 rounded text-sm font-medium">
+                        $<%= sprintf("%.2f", item["purchase_price"].to_f / 162.8) %>
+                      </span>
+                    <% end %>
+                    <% if viewed_by_current_user %>
+                      <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
+                        ✓ Viewed
+                      </span>
+                    <% end %>
+                  </div>
+
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span class="text-gray-400">Float:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1"><%= item["wear"] ? sprintf("%.6f", item["wear"]) : "N/A" %></span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Condition:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1">
+                        <% if item["wear"].present? %>
+                          <% float_val = item["wear"].to_f %>
+                          <% if float_val <= 0.07 %>
+                            <span class="text-green-400">Factory New</span>
+                          <% elsif float_val <= 0.15 %>
+                            <span class="text-blue-400">Minimal Wear</span>
+                          <% elsif float_val <= 0.38 %>
+                            <span class="text-yellow-400">Field-Tested</span>
+                          <% elsif float_val <= 0.45 %>
+                            <span class="text-orange-400">Well-Worn</span>
+                          <% else %>
+                            <span class="text-red-400">Battle-Scarred</span>
+                          <% end %>
+                        <% else %>
+                          N/A
+                        <% end %>
+                      </span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Price:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1">
+                        <% if item["purchase_price"].present? %>
+                          $<%= sprintf("%.2f", item["purchase_price"].to_f / 162.8) %>
+                        <% else %>
+                          N/A
+                        <% end %>
+                      </span>
+                    </div>
+                    <div>
+                      <span class="text-gray-400">Type:</span>
+                      <span class="<%= viewed_by_current_user ? 'text-gray-500' : 'text-white' %> ml-1">
+                        <% if item["market_name"]&.include?("Knife") %>
+                          <span class="text-yellow-400">Knife</span>
+                        <% elsif item["market_name"]&.include?("M4A1-S") %>
+                          <span class="text-blue-400">M4A1-S</span>
+                        <% elsif item["market_name"]&.include?("AWP") %>
+                          <span class="text-red-400">AWP</span>
+                        <% elsif item["market_name"]&.include?("AK-47") %>
+                          <span class="text-orange-400">AK-47</span>
+                        <% else %>
+                          <span class="text-gray-400">Other</span>
+                        <% end %>
+                      </span>
+                    </div>
+                  </div>
+
+                  <% if item["stickers"].present? && item["stickers"].any? %>
+                    <div class="mt-3">
+                      <span class="text-gray-400 text-sm">Stickers:</span>
+                      <div class="flex flex-wrap gap-1 mt-1">
+                        <% item["stickers"].first(3).each do |sticker| %>
+                          <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                            <%= sticker["name"] %>
+                          </span>
+                        <% end %>
+                        <% if item["stickers"].length > 3 %>
+                          <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">
+                            +<%= item["stickers"].length - 3 %> more
+                          </span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col space-y-2 ml-4">
+                  <%= link_to "View Item", "https://csgoempire.com/item/#{item['id']}", target: "_blank", class: "bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-3 rounded transition-colors cursor-pointer" %>
+                  <% if viewed_by_current_user %>
+                    <button class="bg-gray-500 text-white text-sm font-medium py-2 px-3 rounded cursor-not-allowed" disabled>
+                      ✓ Viewed
+                    </button>
+                  <% else %>
+                    <%= form_with url: mark_item_as_viewed_search_items_path, method: :patch, class: "inline mark-as-viewed-form", data: { item_id: item['id'] } do |form| %>
+                      <%= form.hidden_field :item_id, value: item['id'] %>
+                      <%= form.submit "Mark as Viewed", class: "bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-3 rounded transition-colors cursor-pointer" %>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Pagination -->
+        <% if @total_pages > 1 %>
+          <div class="mt-8 flex justify-center">
+            <nav class="flex items-center space-x-2">
+              <% if @has_prev %>
+                <%= link_to "← Previous", low_float_search_items_path(page: @prev_page), class: "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors" %>
+              <% end %>
+
+              <!-- Show page numbers around current page -->
+              <% start_page = [@current_page - 2, 1].max %>
+              <% end_page = [@current_page + 2, @total_pages].min %>
+
+              <% if start_page > 1 %>
+                <%= link_to "1", low_float_search_items_path(page: 1), class: "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors" %>
+                <% if start_page > 2 %>
+                  <span class="text-gray-400 px-2">...</span>
+                <% end %>
+              <% end %>
+
+              <% (start_page..end_page).each do |page_num| %>
+                <% if page_num == @current_page %>
+                  <span class="bg-orange-500 text-black px-4 py-2 rounded-lg font-medium"><%= page_num %></span>
+                <% else %>
+                  <%= link_to page_num, low_float_search_items_path(page: page_num), class: "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors" %>
+                <% end %>
+              <% end %>
+
+              <% if end_page < @total_pages %>
+                <% if end_page < @total_pages - 1 %>
+                  <span class="text-gray-400 px-2">...</span>
+                <% end %>
+                <%= link_to @total_pages, low_float_search_items_path(page: @total_pages), class: "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors" %>
+              <% end %>
+
+              <% if @has_next %>
+                <%= link_to "Next →", low_float_search_items_path(page: @next_page), class: "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors" %>
+              <% end %>
+            </nav>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-center py-12">
+          <div class="text-gray-400 mb-4">
+            <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-white mb-2">No low float items found</h3>
+          <p class="text-gray-400 mb-6">No items with float values ≤ 0.001 are currently available</p>
+          <%= link_to "Try Again", low_float_search_items_path, class: "bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <!-- Sign in page for non-authenticated users -->
+  <div class="min-h-screen bg-black flex items-center justify-center">
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-white mb-4">Welcome to CS</h1>
+      <p class="text-gray-400 mb-8">Your premium trading platform</p>
+
+      <div class="space-x-4">
+        <%= link_to "Sign In", new_user_session_path, class: "bg-orange-500 hover:bg-orange-600 text-black font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 cursor-pointer" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 cursor-pointer" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script>
+function goToPage(pageNumber) {
+  if (pageNumber && pageNumber !== '') {
+    window.location.href = '<%= low_float_search_items_path %>?page=' + pageNumber;
+  }
+}
+
+</script>

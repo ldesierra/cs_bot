@@ -13,6 +13,11 @@ class BidJobBlueGem
   def perform(item)
     begin
       return unless item["market_name"].include?("Case Hardened")
+
+      # Check if current user has already seen this item
+      current_user = get_current_user
+      return if current_user&.has_seen_item?(item["id"])
+
       message = item_message(item)
       send_telegram_message(message) if message.present?
 
@@ -23,6 +28,9 @@ class BidJobBlueGem
         other_message = bid_for(item)
         send_telegram_message(other_message) if other_message.present?
       end
+
+      # Mark item as seen by current user
+      current_user&.mark_item_as_seen(item["id"])
     rescue StandardError => e
       send_telegram_message("Error: #{e.message}")
     end
@@ -34,7 +42,7 @@ class BidJobBlueGem
     response = bid(item, item["purchase_price"])
 
     if response["success"]
-      bidder = $bidded_by[item["id"]]
+      bidder = Bidded.find_by(item_id: item["id"])&.bidded_by&.to_s
       bidder = "AGUS" if bidder == "2"
       bidder = "LUCAS" if bidder == "0"
       bidder = "MATEO" if bidder == "1"
@@ -63,5 +71,10 @@ class BidJobBlueGem
     Telegram::Bot::Client.run(TELEGRAM_TOKEN_2) do |bot|
       bot.api.send_message(chat_id: TELEGRAM_CHAT_ID_AGUS, text: message)
     end
+  end
+
+  def get_current_user
+    current_buyer = $next_buyer || ENV["next_buyer"].to_s
+    User.find_by(user_number: current_buyer)
   end
 end
